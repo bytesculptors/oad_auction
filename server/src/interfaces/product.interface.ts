@@ -16,3 +16,12 @@ export interface IProductPayload {
     duration: number;
     time_start: Date;
 }
+
+export interface IBiddingProduct {
+    productId: string;
+    userId: string;
+}
+
+export interface IFindProduct {
+    keyword: string;
+}

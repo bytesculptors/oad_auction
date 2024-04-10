@@ -46,3 +46,5 @@ export const ProductSchema = new Schema<IProduct>(
         timestamps: true,
     },
 );
+
+ProductSchema.index({ name: 'text' });
