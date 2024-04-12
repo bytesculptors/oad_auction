@@ -9,6 +9,7 @@ import envConfig from '@configs/env.config';
 import { route } from '@routes/index';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
+import { socketConfig } from './sockets/auction.socket';
 dotenv.config();
 
 const app: Express = express();
@@ -35,9 +36,11 @@ app.get('/', (req: Request, res: Response) => {
 const server = createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: 'http://localhost:3000',
+        origin: '*',
     },
 });
+socketConfig(io);
+
 const port: number | string = envConfig.PORT || 4848;
 
 server.listen(port, async () => {
