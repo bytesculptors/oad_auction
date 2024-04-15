@@ -18,3 +18,20 @@ export interface CustomFilterProps {
     title: string;
     options: OptionProps[];
 }
+
+export interface ProductProps {
+    name: string;
+    imageUrl: any;
+    description: string;
+    price: number;
+    category: string;
+    material: string;
+    dimensions: string;
+    color: string;
+    weight: number;
+    condition: string;
+    style: string;
+    manufacturer: string;
+    year: number;
+    origin: string;
+}

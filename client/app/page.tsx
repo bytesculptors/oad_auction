@@ -1,4 +1,4 @@
-import { CustomFilter, Hero, SearchBar } from '@/components';
+import { Hero, ProductCard } from '@/components';
 import Image from 'next/image';
 import ProductData from '@/data/ProductData';
 
@@ -13,13 +13,7 @@ export default function Home() {
                     <h1 className="text-4xl font-extrabold">Antique Catalogue</h1>
                     <p>Explore the antique that you like</p>
                 </div>
-                <div className="home__filters">
-                    <SearchBar />
-                    <div className="home__filters-container">
-                        <CustomFilter />
-                        <CustomFilter />
-                    </div>
-                </div>
+
                 {!isDataEmpty ? (
                     <section>
                         <div className="home__cars-wrapper">
