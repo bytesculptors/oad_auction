@@ -9,7 +9,8 @@ interface ProductCardProps {
 }
 
 const ProductCard = ({ item }: ProductCardProps) => {
-    const { name, imageUrl, price, category, material, condition, origin } = item;
+    const { name, imageUrl, price, category, year, style, origin } = item;
+    const [isOpen, setIsOpen] = useState(false);
     return (
         <div className="car-card group">
             <div className="car-card__content">
@@ -26,7 +27,27 @@ const ProductCard = ({ item }: ProductCardProps) => {
 
             <div className="relative flex w-full mt-2">
                 <div className="flex group-hover:invisible w-full justify-between text-gray">
-                    <div className="flex flex-col justify-center items-center gap-2"></div>
+                    <div className="flex flex-col justify-center items-center gap-2">
+                        <Image src="/category.svg" width={20} height={20} alt="steering wheel" />
+                        <p className="text-[14px]">{category}</p>
+                    </div>
+                    <div className="flex flex-col justify-center items-center gap-2">
+                        <Image src="/year.svg" width={20} height={20} alt="steering wheel" />
+                        <p className="text-[14px]">{year}</p>
+                    </div>
+                    <div className="flex flex-col justify-center items-center gap-2">
+                        <Image src="/style.svg" width={20} height={20} alt="steering wheel" />
+                        <p className="text-[14px]">{style}</p>
+                    </div>
+                </div>
+                <div className="car-card__btn-container">
+                    <CustomButton
+                        title="View More"
+                        containerStyles="w-full py-[16px] rounded-full bg-primary-blue"
+                        textStyles="text-white text-[14px] leading-[17px] font-bold"
+                        rightIcon="/right-arrow.svg"
+                        handleClick={() => setIsOpen(true)}
+                    />
                 </div>
             </div>
         </div>
