@@ -4,6 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
+import CustomButton from './CustomButton';
 
 interface ProductDetailProps {
     isOpen: boolean;
@@ -62,35 +63,6 @@ const ProductDetail = ({ isOpen, closeModal, item }: ProductDetailProps) => {
                                                 className="object-contain"
                                             />
                                         </div>
-                                        <div className="flex gap-3">
-                                            <div className="flex-1 relative w-full h-24 bg-primary-blue-100 rounded-lg">
-                                                <Image
-                                                    src={item.imageUrl}
-                                                    alt="product model"
-                                                    fill
-                                                    priority
-                                                    className="object-contain"
-                                                />
-                                            </div>
-                                            <div className="flex-1 relative w-full h-24 bg-primary-blue-100 rounded-lg">
-                                                <Image
-                                                    src={item.imageUrl}
-                                                    alt="product model"
-                                                    fill
-                                                    priority
-                                                    className="object-contain"
-                                                />
-                                            </div>
-                                            <div className="flex-1 relative w-full h-24 bg-primary-blue-100 rounded-lg">
-                                                <Image
-                                                    src={item.imageUrl}
-                                                    alt="product model"
-                                                    fill
-                                                    priority
-                                                    className="object-contain"
-                                                />
-                                            </div>
-                                        </div>
                                     </div>
                                     <div className="flex-1 flex flex-col gap-2">
                                         <h2 className="font-semibold text-xl capitalize">
@@ -111,6 +83,11 @@ const ProductDetail = ({ isOpen, closeModal, item }: ProductDetailProps) => {
                                                 }
                                             })}
                                         </div>
+                                        <CustomButton
+                                            title="Enter Room"
+                                            containerStyles="w-full mt-6 py-[16px] rounded-full bg-primary-blue"
+                                            textStyles="text-white text-[14px] leading-[17px] font-bold"
+                                        />
                                     </div>
                                 </Dialog.Panel>
                             </Transition.Child>
