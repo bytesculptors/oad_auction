@@ -3,6 +3,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { ProductProps } from '@/types';
 import CustomButton from './CustomButton';
+import ProductDetail from './ProductDetail';
 
 interface ProductCardProps {
     item: ProductProps;
@@ -50,6 +51,7 @@ const ProductCard = ({ item }: ProductCardProps) => {
                     />
                 </div>
             </div>
+            <ProductDetail isOpen={isOpen} closeModal={() => setIsOpen(false)} item={item} />
         </div>
     );
 };
