@@ -1,3 +1,4 @@
+'use client';
 import { Hero, ProductCard, SearchBar } from '@/components';
 import Image from 'next/image';
 import ProductData from '@/data/ProductData';
