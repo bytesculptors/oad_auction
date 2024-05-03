@@ -7,7 +7,10 @@ import { useState } from 'react';
 export default function Home() {
     const [product, setProduct] = useState('');
     const isDataEmpty = !Array.isArray(ProductData) || ProductData.length < 1 || !ProductData;
-    // const filterProduct = ProductData.filter()
+    const filterProduct = ProductData.filter((item) => {
+        const productName = item.name.toLowerCase();
+        return productName.includes(product.toLowerCase());
+    });
     return (
         // <main className="flex min-h-screen flex-col items-center justify-between p-24">
         <main className="overflow-hidden">
@@ -41,7 +44,9 @@ export default function Home() {
                             {/* {ProductData.map((item) => (
                                 <ProductCard item={item} />
                             ))} */}
-                            {}
+                            {filterProduct.map((item) => (
+                                <ProductCard item={item} />
+                            ))}
                         </div>
                     </section>
                 ) : (
