@@ -1,11 +1,11 @@
 'use client';
 import { Combobox, Transition } from '@headlessui/react';
-import { SearchManufacturerProps } from '@/types';
+import { SearchProductProps } from '@/types';
 import Image from 'next/image';
 import { useState, Fragment } from 'react';
 import { autionProducts } from '@/constants';
 
-const SearchProduct = ({ product, setProduct }: SearchManufacturerProps) => {
+const SearchProduct = ({ product, setProduct }: SearchProductProps) => {
     const [query, setQuery] = useState('');
     const filteredProducts =
         query === ''

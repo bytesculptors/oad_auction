@@ -1,4 +1,18 @@
-export const autionProducts = ['Key', 'Mirror', 'Clock', 'Table', 'Lamp', 'Chair'];
+export const autionProducts = [
+    'Lamp',
+    'Vase',
+    'Rug',
+    'Mirror',
+    'Desk',
+    'Stool',
+    'Table',
+    'Chairs',
+    'Cabinet',
+    'Mushroom',
+    'Pitcher',
+    'Urn',
+    'Candleholder',
+];
 
 export const yearsOfProduction = [
     { title: 'Year', value: '' },

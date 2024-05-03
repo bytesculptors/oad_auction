@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import CustomButton from './CustomButton';
+import Link from 'next/link';
 
 interface ProductDetailProps {
     isOpen: boolean;
@@ -77,14 +78,16 @@ const ProductDetail = ({ isOpen, closeModal, item }: ProductDetailProps) => {
                                                             key={key}
                                                         >
                                                             <h4 className="text-gray capitalize">{key}</h4>
-                                                            <p className="text-black-100 font-semibold">{value}</p>
+                                                            <p className="text-black-100 text-justify font-semibold">
+                                                                {value}
+                                                            </p>
                                                         </div>
                                                     );
                                                 }
                                             })}
                                         </div>
                                         <CustomButton
-                                            title="Enter Room"
+                                            title="Apply for auction"
                                             containerStyles="w-full mt-6 py-[16px] rounded-full bg-primary-blue"
                                             textStyles="text-white text-[14px] leading-[17px] font-bold"
                                         />

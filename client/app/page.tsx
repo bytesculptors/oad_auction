@@ -1,9 +1,12 @@
-import { Hero, ProductCard } from '@/components';
+import { Hero, ProductCard, SearchBar } from '@/components';
 import Image from 'next/image';
 import ProductData from '@/data/ProductData';
+import { useState } from 'react';
 
 export default function Home() {
+    const [product, setProduct] = useState('');
     const isDataEmpty = !Array.isArray(ProductData) || ProductData.length < 1 || !ProductData;
+    // const filterProduct = ProductData.filter()
     return (
         // <main className="flex min-h-screen flex-col items-center justify-between p-24">
         <main className="overflow-hidden">
@@ -14,12 +17,30 @@ export default function Home() {
                     <p>Explore the antique that you like</p>
                 </div>
 
+                <div className="home__filter">
+                    {/* <SearchBar /> */}
+                    <form className="searchbar">
+                        <div className="searchbar__item">
+                            <Image src="/car-logo.svg" width={20} height={20} className="ml-4" alt="Car Logo" />
+                            <input
+                                type="text"
+                                name="model"
+                                value={product}
+                                onChange={(e) => setProduct(e.target.value)}
+                                placeholder="Searching..."
+                                className="searchbar__input"
+                            />
+                        </div>
+                    </form>
+                </div>
+
                 {!isDataEmpty ? (
                     <section>
                         <div className="home__cars-wrapper">
-                            {ProductData.map((item) => (
+                            {/* {ProductData.map((item) => (
                                 <ProductCard item={item} />
-                            ))}
+                            ))} */}
+                            {}
                         </div>
                     </section>
                 ) : (
