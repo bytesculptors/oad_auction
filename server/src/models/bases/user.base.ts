@@ -1,4 +1,5 @@
 import { model } from 'mongoose';
-import { IUser, UserSchema } from '../schemas/user.schema';
+import { UserSchema } from '../schemas/user.schema';
+import { ISchemaUser } from '@interfaces/auth.interface';
 
-export const UserModel = model<IUser>('User', UserSchema);
+export const UserModel = model<ISchemaUser>('User', UserSchema);

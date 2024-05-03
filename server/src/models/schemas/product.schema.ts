@@ -1,18 +1,12 @@
-import { defautStartDate } from '@utils/date.util';
+import { ISchemaProduct } from '@interfaces/product.interface';
 import { Schema } from 'mongoose';
 
-export interface IProduct {
-    name: string;
-    description: string;
-    image: string;
-    price: number;
-    winner: string | null;
-    time_start: Date;
-    duration: number;
-}
-
-export const ProductSchema = new Schema<IProduct>(
+export const ProductSchema = new Schema<ISchemaProduct>(
     {
+        sellerId: {
+            type: Schema.Types.ObjectId,
+            required: true,
+        },
         name: {
             type: String,
             required: true,
@@ -30,16 +24,9 @@ export const ProductSchema = new Schema<IProduct>(
             type: Number,
             required: true,
         },
-        winner: {
-            type: String,
-        },
-        duration: {
+        deposit: {
             type: Number,
             required: true,
-        },
-        time_start: {
-            type: Date,
-            default: defautStartDate,
         },
     },
     {

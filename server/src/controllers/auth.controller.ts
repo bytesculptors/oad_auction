@@ -6,6 +6,7 @@ import bcrypt from 'bcrypt';
 import envConfig from '@configs/env.config';
 import { UserModel } from '@models/bases/user.base';
 import request from 'request';
+import Role from '@constants/role';
 export default class AuthController {
     /**
      *
@@ -24,6 +25,8 @@ export default class AuthController {
                 _id: user._id,
                 email: user.email,
                 name: user.name,
+                role: user.role,
+                balance: user.balance,
             };
 
             res.status(200).json({
@@ -55,12 +58,15 @@ export default class AuthController {
                 email: data.email,
                 name: data.name,
                 password: hashedPass,
+                role: data?.role || Role.USER,
             });
 
             const payload: IUserPayload = {
                 _id: user._id,
                 email: user.email,
                 name: user.name,
+                role: user.role,
+                balance: user.balance,
             };
 
             res.status(200).json({

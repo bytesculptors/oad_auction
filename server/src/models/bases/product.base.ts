@@ -1,4 +1,5 @@
-import { IProduct, ProductSchema } from '@models/schemas/product.schema';
+import { ISchemaProduct } from '@interfaces/product.interface';
+import { ProductSchema } from '@models/schemas/product.schema';
 import { model } from 'mongoose';
 
-export const ProductModel = model<IProduct>('Product', ProductSchema);
+export const ProductModel = model<ISchemaProduct>('Product', ProductSchema);

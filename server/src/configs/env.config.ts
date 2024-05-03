@@ -8,6 +8,10 @@ export interface ENV_VAL extends DotenvParseOutput {
     MG_DB: string;
     ACCESS_SECRET_TOKEN: string;
     REFRESH_SECRET_TOKEN: string;
+    VNP_PAY_URL: string;
+    VNP_TMN_CODE: string;
+    VNP_HASH_SECRET: string;
+    VNP_RETURN_URL: string;
 }
 
 const data = config({

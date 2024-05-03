@@ -1,3 +1,13 @@
+import { Document } from 'mongoose';
+
+export interface ISchemaUser extends Document {
+    name: string;
+    email: string;
+    password: string;
+    balance: number;
+    role: string;
+}
+
 export interface IResponseData {
     accessToken?: string;
     data?: any;
@@ -17,6 +27,7 @@ export interface IRegisterByPassword {
     name: string;
     email: string;
     password: string;
+    role?: string;
 }
 
 export interface IFireBase {
@@ -30,4 +41,6 @@ export interface IUserPayload {
     _id: string;
     email: string;
     name: string;
+    role: string;
+    balance: number;
 }

@@ -1,5 +1,6 @@
 import { Request, Response } from '@customes/auth.type';
 import { IBiddingProduct, ICreateProduct, IFindProduct, IProductPayload } from '@interfaces/product.interface';
+import { BiddingSessionModel } from '@models/bases/bidding-session.base';
 import { ProductModel } from '@models/bases/product.base';
 import { UserModel } from '@models/bases/user.base';
 
@@ -13,17 +14,37 @@ export class ProductController {
     static create = async (req: Request, res: Response) => {
         try {
             const product = <ICreateProduct>req.body;
-            if (!product.description || !product.duration || !product.image || !product.name || !product.price)
+            if (
+                !product.description ||
+                !product.duration ||
+                !product.image ||
+                !product.name ||
+                !product.price ||
+                !product.sellerId
+            )
                 return res.status(400).json({ message: 'All fields are required...' });
-            const newProduct = await ProductModel.create({ ...product });
+            const newProduct = await ProductModel.create({
+                sellerId: product.sellerId,
+                name: product.name,
+                image: product.image,
+                price: product.price,
+                description: product.description,
+                deposit: product.deposite,
+            });
+            let newBiddingSession = new BiddingSessionModel({
+                productId: newProduct._id.toString(),
+                duration: product.duration,
+            });
+            if (product?.time_start) newBiddingSession.startTime = product.time_start;
+            newBiddingSession = await newBiddingSession.save();
             const payload: IProductPayload = {
                 _id: newProduct._id.toString(),
                 name: newProduct.name,
                 image: newProduct.image,
                 price: newProduct.price,
                 description: newProduct.description,
-                duration: newProduct.duration,
-                time_start: newProduct.time_start,
+                // status: newBiddingSession.status,
+                // biddingSessionId: newBiddingSession._id.toString(),
             };
             res.status(201).json({ data: payload });
         } catch (error) {
@@ -45,15 +66,12 @@ export class ProductController {
             if (!productId || !userId) return res.status(400).json({ message: 'Properties are not correct!' });
             const product = await ProductModel.findById(productId);
             if (!product) return res.status(400).json({ message: 'Product did not exist yet!' });
-            const user = await UserModel.findOneAndUpdate({ _id: userId }, { $push: { auctions: productId } });
             const payload: IProductPayload = {
                 _id: product._id.toString(),
                 name: product.name,
                 image: product.image,
                 price: product.price,
                 description: product.description,
-                duration: product.duration,
-                time_start: product.time_start,
             };
             res.status(201).json({ data: payload });
         } catch (error) {
@@ -88,8 +106,6 @@ export class ProductController {
                 image: product.image,
                 price: product.price,
                 description: product.description,
-                duration: product.duration,
-                time_start: product.time_start,
             }));
             res.status(200).json({ data: data });
         } catch (error) {
