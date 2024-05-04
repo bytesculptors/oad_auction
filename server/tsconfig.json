@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+        /* Visit https://aka.ms/tsconfig to read more about this file */
+        "baseUrl": "./",
+        "paths": {
+            "@configs/*": ["src/configs/*"],
+            "@controllers/*": ["src/controllers/*"],
+            "@interfaces/*": ["src/interfaces/*"],
+            "@models/*": ["src/models/*"],
+            "@routes/*": ["src/routes/*"],
+            "@utils/*": ["src/utils/*"],
+            "@customes/*": ["src/types/*"],
+            "@constants/*": ["src/constants/*"]
+        },
+        "target": "es2016",
+        "module": "commonjs",
+        "outDir": "./dist",
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "skipLibCheck": true,
+        "moduleResolution": "node"
+    }
+}
