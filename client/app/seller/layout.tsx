@@ -1,17 +1,17 @@
 import SideBar, { SidebarProps } from '@/components/Sidebar';
 import React from 'react';
 import { SiGoogleanalytics } from 'react-icons/si';
-import { MdManageAccounts } from 'react-icons/md';
+import { IoIosCreate } from 'react-icons/io';
 import { FaProductHunt } from 'react-icons/fa';
 import { MdAccountCircle } from 'react-icons/md';
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function SllerLayout({ children }: { children: React.ReactNode }) {
     const SideBarItems: SidebarProps = {
         sideBarItems: [
-            { title: 'Dashboard', address: '/admin', Icon: SiGoogleanalytics },
-            { title: 'Users', address: '/admin/account-management', Icon: MdManageAccounts },
-            { title: 'Products', address: '/admin/product-management', Icon: FaProductHunt },
-            { title: 'Account', address: '/admin/account', Icon: MdAccountCircle },
+            { title: 'Dashboard', address: '/seller', Icon: SiGoogleanalytics },
+            { title: 'Products', address: '/seller/products', Icon: FaProductHunt },
+            { title: 'Create', address: '/seller/create-product', Icon: IoIosCreate },
+            { title: 'Account', address: '/seller/account', Icon: MdAccountCircle },
         ],
     };
 
