@@ -15,20 +15,31 @@ export interface ICreateProduct {
     name: string;
     image: string;
     price: number;
-    deposite: number;
+    deposit: number;
     description: string;
     duration: number;
     time_start?: Date;
 }
 
+export interface IUpdateProduct {
+    sellerId: string;
+    name?: string;
+    image?: string;
+    price?: number;
+    deposite?: number;
+    description?: string;
+    duration?: number;
+    time_start?: Date;
+}
 export interface IProductPayload {
     _id: string;
-    // biddingSessionId: string;
+    biddingSessionId: string;
     name: string;
     image: string;
     price: number;
     description: string;
-    // status: number;
+    status: number;
+    deposit: number;
 }
 
 export interface IBiddingProduct {

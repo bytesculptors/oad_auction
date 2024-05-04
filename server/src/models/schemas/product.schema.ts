@@ -1,10 +1,10 @@
 import { ISchemaProduct } from '@interfaces/product.interface';
-import { Schema } from 'mongoose';
+import { Schema, Types } from 'mongoose';
 
 export const ProductSchema = new Schema<ISchemaProduct>(
     {
         sellerId: {
-            type: Schema.Types.ObjectId,
+            type: Types.ObjectId,
             required: true,
         },
         name: {

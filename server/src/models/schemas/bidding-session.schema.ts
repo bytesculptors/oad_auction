@@ -1,16 +1,16 @@
 import ProductStatus from '@constants/status';
 import { ISchemaBiddingSession } from '@interfaces/bidding-session.interface';
 import { defaultStartDate } from '@utils/date.util';
-import { Schema } from 'mongoose';
+import { Types, Schema } from 'mongoose';
 
 export const BiddingSessionSchema = new Schema<ISchemaBiddingSession>(
     {
         productId: {
-            type: Schema.Types.ObjectId,
+            type: Types.ObjectId,
             required: true,
         },
-        userIds: {
-            type: [Schema.Types.ObjectId],
+        bidders: {
+            type: [Types.ObjectId],
             required: true,
             default: [],
         },
@@ -20,7 +20,7 @@ export const BiddingSessionSchema = new Schema<ISchemaBiddingSession>(
             default: defaultStartDate(),
         },
         winnerId: {
-            type: Schema.Types.ObjectId,
+            type: Types.ObjectId,
             required: false,
         },
         status: {
