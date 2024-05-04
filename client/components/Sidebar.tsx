@@ -25,7 +25,7 @@ export interface SidebarProps {
 
 export default function Sidebar({ sideBarItems }: SidebarProps) {
     return (
-        <div className="w-50 md:w-72 h-screen bg-purple-950">
+        <div className="w-50 md:w-72 h-screen bg-blue-500">
             <div className="flex flex-col gap-x-4 items-center justify-center">
                 {sideBarItems.map((sideBarItem, index) => (
                     <SideBarItem Icon={sideBarItem.Icon} address={sideBarItem.address} title={sideBarItem.title} />
