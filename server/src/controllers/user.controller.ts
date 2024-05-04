@@ -1,6 +1,6 @@
 import ProductStatus from '@constants/status';
 import { Request, Response } from '@customes/auth.type';
-import { IBiddingProduct, IFindProduct, IProductPayload } from '@interfaces/product.interface';
+import { IBiddingData, IBiddingProduct, IFindProduct, IProductPayload } from '@interfaces/product.interface';
 import { BiddingSessionModel } from '@models/bases/bidding-session.base';
 import { ProductModel } from '@models/bases/product.base';
 import { UserModel } from '@models/bases/user.base';
@@ -27,15 +27,19 @@ export class UserController {
                 { upsert: true },
             );
             if (!biddingSession) return res.status(400).json({ message: 'Bidding session did not exist yet!' });
-            const payload: IProductPayload = {
-                _id: productId,
-                name: product.name,
-                image: product.image,
-                price: product.price,
-                description: product.description,
-                biddingSessionId: biddingSession._id.toString(),
+            const payload: IBiddingData = {
+                _id: biddingSession._id.toString(),
+                duration: biddingSession.duration,
                 status: biddingSession.status,
-                deposit: product.deposit,
+                startTime: biddingSession.startTime,
+                product: {
+                    _id: product._id.toString(),
+                    name: product.name,
+                    image: product.image,
+                    price: product.price,
+                    description: product.description,
+                    deposit: product.deposit,
+                },
             };
             res.status(201).json({ data: payload });
         } catch (error) {
@@ -65,27 +69,55 @@ export class UserController {
     static findProducts = async (req: Request, res: Response) => {
         const { keyword } = <IFindProduct>(<unknown>req.query);
         try {
-            const products = await ProductModel.find({ $text: { $search: keyword } });
+            const test = await ProductModel.aggregate([
+                {
+                    $match: {
+                        $text: {
+                            $search: keyword,
+                            // $language:
+                        },
+                    },
+                },
+                {
+                    $lookup: {
+                        from: 'biddingsessions',
+                        localField: '_id',
+                        foreignField: 'product',
+                        as: 'bidding',
+                        pipeline: [
+                            {
+                                $project: {
+                                    status: 1,
+                                },
+                            },
+                        ],
+                    },
+                },
+                {
+                    $project: {},
+                },
+            ]).exec();
+            return res.status(200).json({ data: test });
+
+            //     .select('name image price description deposit')
+            //     .populate({
+            //         path: '_id',
+            //         model: 'BiddingSession',
+            //         select: 'startTime status duration',
+            //         match: { sellerId },
+            //     });
             // const products = await ProductModel.find({ name: { $regex: new RegExp(keyword, 'i') } });
-            if (!products) return res.status(200).json({ data: [] });
-            const data: IProductPayload[] = await Promise.all(
-                products.map(async (product) => {
-                    const biddingSession = await BiddingSessionModel.findOne({
-                        productId: product._id.toString(),
-                    });
-                    return {
-                        _id: product._id.toString(),
-                        name: product.name,
-                        image: product.image,
-                        price: product.price,
-                        description: product.description,
-                        status: biddingSession?.status || ProductStatus.INACTIVE,
-                        biddingSessionId: biddingSession?._id.toString(),
-                        deposit: product.deposit,
-                    };
-                }),
-            );
-            res.status(200).json({ data: data });
+            const biddingSessions = await BiddingSessionModel.find()
+                .select('startTime status duration')
+                .populate({
+                    path: 'product',
+                    model: 'Product',
+                    select: 'name image price description deposit',
+                    match: { $text: { $search: keyword } },
+                    options: {},
+                });
+            if (!biddingSessions) return res.status(200).json({ data: [] });
+            res.status(200).json({ data: biddingSessions });
         } catch (error) {
             console.log(error);
             res.status(500).json({ message: 'Something went wrong!' });

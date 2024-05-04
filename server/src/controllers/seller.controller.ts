@@ -1,10 +1,9 @@
 import ProductStatus from '@constants/status';
 import { Request, Response } from '@customes/auth.type';
-import { ICreateProduct, IProductPayload, IUpdateProduct } from '@interfaces/product.interface';
+import { IBiddingData, ICreateProduct, IProductPayload, IUpdateProduct } from '@interfaces/product.interface';
 import { BiddingSessionModel } from '@models/bases/bidding-session.base';
 import { ProductModel } from '@models/bases/product.base';
 import { UserModel } from '@models/bases/user.base';
-import { Types } from 'mongoose';
 export default class SellerController {
     /**
      *
@@ -36,20 +35,24 @@ export default class SellerController {
                 deposit: product.deposit,
             });
             let newBiddingSession = new BiddingSessionModel({
-                productId: newProduct._id.toString(),
+                product: newProduct._id.toString(),
                 duration: product.duration,
             });
             if (product?.time_start) newBiddingSession.startTime = product.time_start;
             newBiddingSession = await newBiddingSession.save();
-            const payload: IProductPayload = {
-                _id: newProduct._id.toString(),
-                name: newProduct.name,
-                image: newProduct.image,
-                price: newProduct.price,
-                description: newProduct.description,
+            const payload: IBiddingData = {
+                _id: newBiddingSession._id.toString(),
+                duration: newBiddingSession.duration,
                 status: newBiddingSession.status,
-                biddingSessionId: newBiddingSession._id.toString(),
-                deposit: newProduct.deposit,
+                startTime: newBiddingSession.startTime,
+                product: {
+                    _id: newProduct._id.toString(),
+                    name: newProduct.name,
+                    image: newProduct.image,
+                    price: newProduct.price,
+                    description: newProduct.description,
+                    deposit: newProduct.deposit,
+                },
             };
             res.status(201).json({ data: payload });
         } catch (error) {
@@ -107,13 +110,10 @@ export default class SellerController {
             })
                 .select('startTime status duration')
                 .populate({
-                    path: 'productId',
+                    path: 'product',
                     model: 'Product',
                     select: 'name image price description deposit',
                     match: { sellerId },
-                    transform: (doc) => {
-                        return { ...doc, name: 'fdjfd' };
-                    },
                 });
             if (!biddingSessions) return res.status(200).json({ data: [] });
             res.status(200).json({ data: biddingSessions });

@@ -33,13 +33,19 @@ export interface IUpdateProduct {
 }
 export interface IProductPayload {
     _id: string;
-    biddingSessionId: string;
     name: string;
     image: string;
     price: number;
     description: string;
-    status: number;
     deposit: number;
+}
+
+export interface IBiddingData {
+    _id: string;
+    product: IProductPayload;
+    startTime: Date;
+    status: number;
+    duration: number;
 }
 
 export interface IBiddingProduct {
