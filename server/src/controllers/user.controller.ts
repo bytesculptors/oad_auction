@@ -1,8 +1,11 @@
+import { SearchProduct } from '@constants/search';
 import { Request, Response } from '@customes/auth.type';
 import { IBiddingData, IBiddingProduct, IFindProduct, IProductPayload } from '@interfaces/product.interface';
 import { BiddingSessionModel } from '@models/bases/bidding-session.base';
 import { ProductModel } from '@models/bases/product.base';
 import { UserModel } from '@models/bases/user.base';
+import { BiddingRefOptions } from '@references/populate-opts/bidding.ref';
+import { biddingSelects } from '@references/selects/bidding.select';
 import mongoose from 'mongoose';
 export class UserController {
     /**
@@ -21,7 +24,7 @@ export class UserController {
             const product = await ProductModel.findById(productId);
             if (!product) return res.status(400).json({ message: 'Product did not exist yet!' });
             const biddingSession = await BiddingSessionModel.findOneAndUpdate(
-                { productId: productId },
+                { product: productId },
                 { $push: { bidders: userId } },
                 { upsert: true },
             );
@@ -38,6 +41,16 @@ export class UserController {
                     price: product.price,
                     description: product.description,
                     deposit: product.deposit,
+                    category: product.category,
+                    color: product.color,
+                    condition: product.condition,
+                    dimension: product.dimension,
+                    manufacturer: product.manufacturer,
+                    material: product.material,
+                    origin: product.origin,
+                    style: product.style,
+                    weight: product.weight,
+                    year: product.year,
                 },
             };
             res.status(201).json({ data: payload });
@@ -47,6 +60,12 @@ export class UserController {
         }
     };
 
+    /**
+     *
+     * @param req
+     * @param res
+     * @returns status Is product canceled
+     */
     static cancelProduct = async (req: Request, res: Response) => {
         try {
             const { productId, userId } = <IBiddingProduct>req.body;
@@ -65,21 +84,26 @@ export class UserController {
         }
     };
 
+    /**
+     *
+     * @param req
+     * @param res
+     * @returns products by keyword
+     */
     static findProducts = async (req: Request, res: Response) => {
-        const { keyword } = <IFindProduct>(<unknown>req.query);
+        const { keyword, limit = SearchProduct.LIMIT, page = SearchProduct.PAGE } = <IFindProduct>(<unknown>req.query);
         try {
-            const products = await ProductModel.find({ $text: { $search: keyword } }).exec();
+            const products = await ProductModel.find(keyword ? { $text: { $search: keyword } } : {})
+                .limit(limit)
+                .skip(page)
+                .exec();
             const productIds = products.map((item) => {
                 return item._id;
             });
 
             const biddingSessions = await BiddingSessionModel.find({ product: { $in: productIds } })
-                .select('startTime status duration')
-                .populate({
-                    path: 'product',
-                    model: 'Product',
-                    select: 'name image price description deposit',
-                });
+                .select(biddingSelects)
+                .populate(BiddingRefOptions());
             if (!biddingSessions) return res.status(200).json({ data: [] });
             res.status(200).json({ data: biddingSessions });
         } catch (error) {

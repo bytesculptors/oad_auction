@@ -28,10 +28,50 @@ export const ProductSchema = new Schema<ISchemaProduct>(
             type: Number,
             required: true,
         },
+        material: {
+            type: String,
+            required: true,
+        },
+        dimension: {
+            type: String,
+            required: true,
+        },
+        color: {
+            type: String,
+            required: true,
+        },
+        weight: {
+            type: Number,
+            required: true,
+        },
+        manufacturer: {
+            type: String,
+            required: true,
+        },
+        origin: {
+            type: String,
+            required: true,
+        },
+        condition: {
+            type: String,
+            required: true,
+        },
+        category: {
+            type: String,
+            required: true,
+        },
+        style: {
+            type: String,
+            required: true,
+        },
+        year: {
+            type: Number,
+            required: true,
+        },
     },
     {
         timestamps: true,
     },
 );
 
-ProductSchema.index({ name: 'text' });
+ProductSchema.index({ name: 'text', category: 'text', year: 'text', description: 'text' });

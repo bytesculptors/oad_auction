@@ -8,6 +8,16 @@ export interface ISchemaProduct extends Document {
     image: string;
     price: number;
     deposit: number;
+    category: string;
+    material: string;
+    dimension: string;
+    color: string;
+    weight: number;
+    condition: string;
+    style: string;
+    manufacturer: string;
+    year: number;
+    origin: string;
 }
 
 export interface ICreateProduct {
@@ -18,7 +28,17 @@ export interface ICreateProduct {
     deposit: number;
     description: string;
     duration: number;
-    time_start?: Date;
+    startTime?: Date;
+    category: string;
+    material: string;
+    dimension: string;
+    color: string;
+    weight: number;
+    condition: string;
+    style: string;
+    manufacturer: string;
+    year: number;
+    origin: string;
 }
 
 export interface IUpdateProduct {
@@ -29,7 +49,17 @@ export interface IUpdateProduct {
     deposite?: number;
     description?: string;
     duration?: number;
-    time_start?: Date;
+    startTime?: Date;
+    category?: string;
+    material?: string;
+    dimension?: string;
+    color?: string;
+    weight?: string;
+    condition?: string;
+    style?: string;
+    manufacturer?: string;
+    year?: number;
+    origin?: string;
 }
 export interface IProductPayload {
     _id: string;
@@ -38,6 +68,16 @@ export interface IProductPayload {
     price: number;
     description: string;
     deposit: number;
+    category: string;
+    material: string;
+    dimension: string;
+    color: string;
+    weight: number;
+    condition: string;
+    style: string;
+    manufacturer: string;
+    year: number;
+    origin: string;
 }
 
 export interface IBiddingData {
@@ -54,7 +94,9 @@ export interface IBiddingProduct {
 }
 
 export interface IFindProduct {
-    keyword: string;
+    keyword?: string;
+    limit?: number;
+    page?: number;
 }
 
 export interface IQueryProduct {

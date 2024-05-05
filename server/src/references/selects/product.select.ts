@@ -1,1 +1,17 @@
-export const productSelects: string[] = ['name', 'image', 'price', 'description', 'deposit'];
+export const productSelects: string[] = [
+    'name',
+    'image',
+    'price',
+    'description',
+    'deposit',
+    'category',
+    'material',
+    'dimension',
+    'color',
+    'weight',
+    'condition',
+    'style',
+    'manufacturer',
+    'year',
+    'origin',
+];
