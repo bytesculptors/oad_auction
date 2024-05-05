@@ -9,6 +9,10 @@ export const BiddingSessionSchema = new Schema<ISchemaBiddingSession>(
             type: Types.ObjectId,
             required: true,
         },
+        sellerId: {
+            type: Types.ObjectId,
+            required: true,
+        },
         bidders: {
             type: [Types.ObjectId],
             required: true,

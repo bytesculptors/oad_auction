@@ -1,10 +1,9 @@
-import ProductStatus from '@constants/status';
 import { Request, Response } from '@customes/auth.type';
 import { IBiddingData, IBiddingProduct, IFindProduct, IProductPayload } from '@interfaces/product.interface';
 import { BiddingSessionModel } from '@models/bases/bidding-session.base';
 import { ProductModel } from '@models/bases/product.base';
 import { UserModel } from '@models/bases/user.base';
-import { Schema, Types } from 'mongoose';
+import mongoose from 'mongoose';
 export class UserController {
     /**
      *
@@ -56,7 +55,7 @@ export class UserController {
             if (!biddingSession) return res.status(400).json({ message: 'Bidding session did not exist yet!' });
             BiddingSessionModel.findOneAndUpdate(
                 { productId },
-                { $pull: { bidders: new Types.ObjectId(userId) } },
+                { $pull: { bidders: new mongoose.Types.ObjectId(userId) } },
                 { upsert: true },
             ).exec();
             res.status(201).json({ data: 'Delete successfully!' });
@@ -69,52 +68,17 @@ export class UserController {
     static findProducts = async (req: Request, res: Response) => {
         const { keyword } = <IFindProduct>(<unknown>req.query);
         try {
-            const test = await ProductModel.aggregate([
-                {
-                    $match: {
-                        $text: {
-                            $search: keyword,
-                            // $language:
-                        },
-                    },
-                },
-                {
-                    $lookup: {
-                        from: 'biddingsessions',
-                        localField: '_id',
-                        foreignField: 'product',
-                        as: 'bidding',
-                        pipeline: [
-                            {
-                                $project: {
-                                    status: 1,
-                                },
-                            },
-                        ],
-                    },
-                },
-                {
-                    $project: {},
-                },
-            ]).exec();
-            return res.status(200).json({ data: test });
+            const products = await ProductModel.find({ $text: { $search: keyword } }).exec();
+            const productIds = products.map((item) => {
+                return item._id;
+            });
 
-            //     .select('name image price description deposit')
-            //     .populate({
-            //         path: '_id',
-            //         model: 'BiddingSession',
-            //         select: 'startTime status duration',
-            //         match: { sellerId },
-            //     });
-            // const products = await ProductModel.find({ name: { $regex: new RegExp(keyword, 'i') } });
-            const biddingSessions = await BiddingSessionModel.find()
+            const biddingSessions = await BiddingSessionModel.find({ product: { $in: productIds } })
                 .select('startTime status duration')
                 .populate({
                     path: 'product',
                     model: 'Product',
                     select: 'name image price description deposit',
-                    match: { $text: { $search: keyword } },
-                    options: {},
                 });
             if (!biddingSessions) return res.status(200).json({ data: [] });
             res.status(200).json({ data: biddingSessions });

@@ -10,7 +10,8 @@
             "@routes/*": ["src/routes/*"],
             "@utils/*": ["src/utils/*"],
             "@customes/*": ["src/types/*"],
-            "@constants/*": ["src/constants/*"]
+            "@constants/*": ["src/constants/*"],
+            "@references/*": ["src/references/*"]
         },
         "target": "es2016",
         "module": "commonjs",

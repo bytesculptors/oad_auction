@@ -56,3 +56,13 @@ export interface IBiddingProduct {
 export interface IFindProduct {
     keyword: string;
 }
+
+export interface IQueryProduct {
+    status: string;
+}
+
+export interface IAdminAcceptProduct {
+    _id: string;
+    sellerId: string;
+    productId: string;
+}
