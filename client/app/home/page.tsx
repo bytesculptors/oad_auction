@@ -16,11 +16,11 @@ export default function Home() {
     });
     const stateUser = useSelector((state: RootState) => state.reducerUser);
 
-    useEffect(() => {
-        if (stateUser._id === '') {
-            redirect('/login');
-        }
-    }, []);
+    // useEffect(() => {
+    //     if (stateUser._id === '') {
+    //         redirect('/login');
+    //     }
+    // }, []);
 
     useEffect(() => {
         console.log(stateUser);

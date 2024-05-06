@@ -5,7 +5,7 @@ import { IoIosCreate } from 'react-icons/io';
 import { FaProductHunt } from 'react-icons/fa';
 import { MdAccountCircle } from 'react-icons/md';
 
-export default function SllerLayout({ children }: { children: React.ReactNode }) {
+export default function SellerLayout({ children }: { children: React.ReactNode }) {
     const SideBarItems: SidebarProps = {
         sideBarItems: [
             { title: 'Dashboard', address: '/home/seller', Icon: SiGoogleanalytics },

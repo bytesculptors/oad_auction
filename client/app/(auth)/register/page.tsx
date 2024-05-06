@@ -20,6 +20,7 @@ import { setStateUser } from '@/redux/stateUser/user.state';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useRouter } from 'next/navigation';
+import { IUser } from '@/types/use.type';
 
 function Copyright(props: any) {
     return (
@@ -53,15 +54,16 @@ export default function SignUp() {
 
         const response = await registerApi(dataRegister);
         if (response.status === 200) {
-            store.dispatch(
-                setStateUser({
-                    _id: response.data._id,
-                    balance: response.data.balance,
-                    email: response.data.email,
-                    name: response.data.name,
-                    role: response.data.role,
-                }),
-            );
+            const user: IUser = {
+                _id: response.data._id,
+                balance: response.data.balance,
+                email: response.data.email,
+                name: response.data.name,
+                role: response.data.role,
+            };
+            store.dispatch(setStateUser(user));
+            localStorage.removeItem('user');
+            localStorage.setItem('user', JSON.stringify(user));
             router.push('/home');
         } else {
             toast.error(response.data.message, {

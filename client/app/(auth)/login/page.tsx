@@ -18,6 +18,8 @@ import { loginApi } from '@/api/authenApi';
 import { store } from '@/redux/Store';
 import { setStateUser } from '@/redux/stateUser/user.state';
 import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { IUser } from '@/types/use.type';
 
 function Copyright(props: any) {
     return (
@@ -46,15 +48,16 @@ export default function SignInSide() {
         });
 
         if (response.status === 200) {
-            store.dispatch(
-                setStateUser({
-                    _id: response.data._id,
-                    balance: response.data.balance,
-                    email: response.data.email,
-                    name: response.data.name,
-                    role: response.data.role,
-                }),
-            );
+            const user: IUser = {
+                _id: response.data._id,
+                balance: response.data.balance,
+                email: response.data.email,
+                name: response.data.name,
+                role: response.data.role,
+            };
+            store.dispatch(setStateUser(user));
+            localStorage.removeItem('user');
+            localStorage.setItem('user', JSON.stringify(user));
             router.push('/home');
         } else {
             toast.error(response.data.message, {
