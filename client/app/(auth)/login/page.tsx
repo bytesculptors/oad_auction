@@ -13,7 +13,11 @@ import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
+import { loginApi } from '@/api/authenApi';
+import { store } from '@/redux/Store';
+import { setStateUser } from '@/redux/stateUser/user.state';
+import { toast, ToastContainer } from 'react-toastify';
 
 function Copyright(props: any) {
     return (
@@ -33,13 +37,30 @@ const defaultTheme = createTheme();
 
 export default function SignInSide() {
     const router = useRouter();
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        // console.log({
-        //     email: data.get('email'),
-        //     password: data.get('password'),
-        // })
+        const response = await loginApi({
+            email: data.get('email')?.toString() || '',
+            password: data.get('password')?.toString() || '',
+        });
+
+        if (response.status === 200) {
+            store.dispatch(
+                setStateUser({
+                    _id: response.data._id,
+                    balance: response.data.balance,
+                    email: response.data.email,
+                    name: response.data.name,
+                    role: response.data.role,
+                }),
+            );
+            router.push('/home');
+        } else {
+            toast.error(response.data.message, {
+                position: 'top-center',
+            });
+        }
     };
 
     return (
@@ -120,6 +141,7 @@ export default function SignInSide() {
                     </Box>
                 </Grid>
             </Grid>
+            <ToastContainer />
         </ThemeProvider>
     );
 }

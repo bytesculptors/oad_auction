@@ -8,10 +8,10 @@ import { MdAccountCircle } from 'react-icons/md';
 export default function SllerLayout({ children }: { children: React.ReactNode }) {
     const SideBarItems: SidebarProps = {
         sideBarItems: [
-            { title: 'Dashboard', address: '/seller', Icon: SiGoogleanalytics },
-            { title: 'Products', address: '/seller/products', Icon: FaProductHunt },
-            { title: 'Create', address: '/seller/create-product', Icon: IoIosCreate },
-            { title: 'Account', address: '/seller/account', Icon: MdAccountCircle },
+            { title: 'Dashboard', address: '/home/seller', Icon: SiGoogleanalytics },
+            { title: 'Products', address: '/home/seller/products', Icon: FaProductHunt },
+            { title: 'Create', address: '/home/seller/create-product', Icon: IoIosCreate },
+            { title: 'Account', address: '/home/seller/account', Icon: MdAccountCircle },
         ],
     };
 

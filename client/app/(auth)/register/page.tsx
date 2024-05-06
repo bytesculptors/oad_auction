@@ -1,3 +1,4 @@
+'use client';
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -12,6 +13,13 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import { registerApi, registerApiProps } from '@/api/authenApi';
+import { store } from '@/redux/Store';
+import { setStateUser } from '@/redux/stateUser/user.state';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useRouter } from 'next/navigation';
 
 function Copyright(props: any) {
     return (
@@ -30,13 +38,36 @@ function Copyright(props: any) {
 const defaultTheme = createTheme();
 
 export default function SignUp() {
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const [role, setRole] = React.useState('');
+    const router = useRouter();
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        console.log({
-            email: data.get('email'),
-            password: data.get('password'),
-        });
+
+        const dataRegister: registerApiProps = {
+            name: data.get('userName')?.toString() || '',
+            email: data.get('email')?.toString() || '',
+            password: data.get('password')?.toString() || '',
+            role: role,
+        };
+
+        const response = await registerApi(dataRegister);
+        if (response.status === 200) {
+            store.dispatch(
+                setStateUser({
+                    _id: response.data._id,
+                    balance: response.data.balance,
+                    email: response.data.email,
+                    name: response.data.name,
+                    role: response.data.role,
+                }),
+            );
+            router.push('/home');
+        } else {
+            toast.error(response.data.message, {
+                position: 'top-center',
+            });
+        }
     };
 
     return (
@@ -59,18 +90,34 @@ export default function SignUp() {
                     </Typography>
                     <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
                         <Grid container spacing={2}>
-                            <Grid item xs={12} sm={6}>
+                            <Grid item xs={12}>
                                 <TextField
                                     autoComplete="given-name"
-                                    name="firstName"
+                                    name="userName"
                                     required
                                     fullWidth
-                                    id="firstName"
-                                    label="First Name"
+                                    id="userName"
+                                    label="User Name"
                                     autoFocus
                                 />
                             </Grid>
-                            <Grid item xs={12} sm={6}>
+                            <Grid item xs={12}>
+                                <FormControl fullWidth>
+                                    <InputLabel id="role-label">Role</InputLabel>
+                                    <Select
+                                        autoFocus
+                                        labelId="role-label"
+                                        id="role"
+                                        value={role}
+                                        label="Age"
+                                        onChange={(e) => setRole(e.target.value)}
+                                    >
+                                        <MenuItem value={'user'}>User</MenuItem>
+                                        <MenuItem value={'seller'}>Seller</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                            {/* <Grid item xs={12} sm={6}>
                                 <TextField
                                     required
                                     fullWidth
@@ -79,7 +126,7 @@ export default function SignUp() {
                                     name="lastName"
                                     autoComplete="family-name"
                                 />
-                            </Grid>
+                            </Grid> */}
                             <Grid item xs={12}>
                                 <TextField
                                     required
@@ -122,6 +169,7 @@ export default function SignUp() {
                 </Box>
                 <Copyright sx={{ mt: 5 }} />
             </Container>
+            <ToastContainer />
         </ThemeProvider>
     );
 }
