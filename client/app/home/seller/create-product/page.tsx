@@ -4,8 +4,21 @@ import React, { useState } from 'react';
 
 export default function createProduct() {
     const [name, setName] = useState('');
+    const [price, setPrice] = useState('');
+    const [deposit, setDeposit] = useState('');
     const [file, setFile] = useState<File | undefined>();
     const [description, setDescription] = useState('');
+    const [duration, setDuration] = useState('');
+    const [category, setCategory] = useState('');
+    const [material, setMaterial] = useState('');
+    const [dimension, setDimension] = useState('');
+    const [color, setColor] = useState('');
+    const [weight, setWeight] = useState('');
+    const [condition, setCondition] = useState('');
+    const [style, setStyle] = useState('');
+    const [manufacturer, setManufacturer] = useState('');
+    const [year, setYear] = useState('');
+    const [origin, setOrigin] = useState('');
 
     const handleSubmitForm = (event: React.FormEvent<HTMLButtonElement>) => {
         event.preventDefault();
@@ -13,14 +26,27 @@ export default function createProduct() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center max-w-6xl mx-auto bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className=" flex items-center justify-center w-full mx-auto bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
             <div className=" w-full space-y-8 bg-white shadow-md rounded-lg p-6">
                 <div>
                     <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Create Product</h2>
                 </div>
-                <form className="mt-8 space-y-6 " action="#" method="POST">
+                <form className="mt-8 h-80  space-y-6 overflow-auto " action="#" method="POST">
                     <div className="rounded-md shadow-sm -space-y-px">
                         <InputItem title="Name" onChangeContent={(event) => setName(event.target.value)} />
+                        <InputItem
+                            title="Price"
+                            onChangeContent={(e) => {
+                                setPrice(e.target.value);
+                            }}
+                        />
+                        <InputItem
+                            title="Deposit"
+                            onChangeContent={(e) => {
+                                setDeposit(e.target.value);
+                            }}
+                        />
+
                         <div>
                             <label htmlFor="description" className="sr-only">
                                 Image
@@ -52,15 +78,62 @@ export default function createProduct() {
                                 placeholder="Description"
                             ></textarea>
                         </div>
-                        {/* <InputItem title="Category" />
-                        <InputItem title="Dimensions" />
-                        <InputItem title="Color" />
-                        <InputItem title="Weight" />
-                        <InputItem title="Condition" />
-                        <InputItem title="Style" />
-                        <InputItem title="Manufacturer" />
-                        <InputItem title="Year" />
-                        <InputItem title="Origin" /> */}
+                        <InputItem
+                            title="Duration"
+                            onChangeContent={(e) => {
+                                setDuration(e.target.value);
+                            }}
+                        />
+
+                        <InputItem
+                            title="Dimension"
+                            onChangeContent={(e) => {
+                                setDimension(e.target.value);
+                            }}
+                        />
+
+                        <InputItem
+                            title="Color"
+                            onChangeContent={(e) => {
+                                setColor(e.target.value);
+                            }}
+                        />
+                        <InputItem
+                            title="Weight"
+                            onChangeContent={(e) => {
+                                setWeight(e.target.value);
+                            }}
+                        />
+                        <InputItem
+                            title="Condition"
+                            onChangeContent={(e) => {
+                                setCondition(e.target.value);
+                            }}
+                        />
+                        <InputItem
+                            title="Style"
+                            onChangeContent={(e) => {
+                                setStyle(e.target.value);
+                            }}
+                        />
+                        <InputItem
+                            title="Manufacturer"
+                            onChangeContent={(e) => {
+                                setManufacturer(e.target.value);
+                            }}
+                        />
+                        <InputItem
+                            title="Year"
+                            onChangeContent={(e) => {
+                                setYear(e.target.value);
+                            }}
+                        />
+                        <InputItem
+                            title="Origin"
+                            onChangeContent={(e) => {
+                                setOrigin(e.target.value);
+                            }}
+                        />
                     </div>
                     <div>
                         <button
