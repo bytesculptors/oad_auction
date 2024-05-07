@@ -8,6 +8,16 @@ export interface ISchemaProduct extends Document {
     image: string;
     price: number;
     deposit: number;
+    category: string;
+    material: string;
+    dimension: string;
+    color: string;
+    weight: number;
+    condition: string;
+    style: string;
+    manufacturer: string;
+    year: number;
+    origin: string;
 }
 
 export interface ICreateProduct {
@@ -18,7 +28,17 @@ export interface ICreateProduct {
     deposit: number;
     description: string;
     duration: number;
-    time_start?: Date;
+    startTime?: Date;
+    category: string;
+    material: string;
+    dimension: string;
+    color: string;
+    weight: number;
+    condition: string;
+    style: string;
+    manufacturer: string;
+    year: number;
+    origin: string;
 }
 
 export interface IUpdateProduct {
@@ -29,17 +49,43 @@ export interface IUpdateProduct {
     deposite?: number;
     description?: string;
     duration?: number;
-    time_start?: Date;
+    startTime?: Date;
+    category?: string;
+    material?: string;
+    dimension?: string;
+    color?: string;
+    weight?: string;
+    condition?: string;
+    style?: string;
+    manufacturer?: string;
+    year?: number;
+    origin?: string;
 }
 export interface IProductPayload {
     _id: string;
-    biddingSessionId: string;
     name: string;
     image: string;
     price: number;
     description: string;
-    status: number;
     deposit: number;
+    category: string;
+    material: string;
+    dimension: string;
+    color: string;
+    weight: number;
+    condition: string;
+    style: string;
+    manufacturer: string;
+    year: number;
+    origin: string;
+}
+
+export interface IBiddingData {
+    _id: string;
+    product: IProductPayload;
+    startTime: Date;
+    status: number;
+    duration: number;
 }
 
 export interface IBiddingProduct {
@@ -48,5 +94,17 @@ export interface IBiddingProduct {
 }
 
 export interface IFindProduct {
-    keyword: string;
+    keyword?: string;
+    limit?: number;
+    page?: number;
+}
+
+export interface IQueryProduct {
+    status: string;
+}
+
+export interface IAdminAcceptProduct {
+    _id: string;
+    sellerId: string;
+    productId: string;
 }

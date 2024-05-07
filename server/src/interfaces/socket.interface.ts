@@ -14,8 +14,25 @@ export interface IJoinRoom {
     user: IClientUser;
 }
 
+export interface IResponseJoinRoom {
+    price: number;
+    user: IClientUser;
+}
+
 export interface IBiddingRoom {
     users: IOnlineUser[];
     price: number;
-    winner?: IOnlineUser;
+    startTime: Date;
+    duration: number;
+    winner?: IClientUser;
 }
+
+export interface IPlaceBid extends IJoinRoom {
+    amount: number;
+}
+
+export interface IPlaceBidResponse extends IClientUser {
+    price: number;
+}
+
+export interface IWinnderResponse extends IPlaceBidResponse {}

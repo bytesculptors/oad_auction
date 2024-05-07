@@ -1,8 +1,9 @@
 import { Document, ObjectId } from 'mongoose';
 
 export interface ISchemaBiddingSession extends Document {
-    productId: ObjectId;
+    product: ObjectId;
     bidders: ObjectId[];
+    sellerId: ObjectId;
     startTime: Date;
     winnerId: ObjectId;
     status: number;

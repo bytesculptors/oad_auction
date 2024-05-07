@@ -5,7 +5,11 @@ import { Types, Schema } from 'mongoose';
 
 export const BiddingSessionSchema = new Schema<ISchemaBiddingSession>(
     {
-        productId: {
+        product: {
+            type: Types.ObjectId,
+            required: true,
+        },
+        sellerId: {
             type: Types.ObjectId,
             required: true,
         },

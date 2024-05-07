@@ -6,5 +6,5 @@ const sellerRouter = Router();
 sellerRouter.post('/create-product', SellerController.createProduct);
 sellerRouter.patch('/update-product/:productId', SellerController.updateProduct);
 sellerRouter.post('/request-review/:productId', SellerController.requestApprovaling);
-sellerRouter.get('/get-inactivated-product', SellerController.getInactivatedProducts);
+sellerRouter.get('/get-products', SellerController.getProducts);
 export default sellerRouter;
