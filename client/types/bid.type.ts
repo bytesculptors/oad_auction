@@ -34,6 +34,8 @@ export interface IProductItem {
     year: number;
     origin: string;
     deposit: number;
+    duration: number;
+    timeStart: Date;
 }
 export const fakeProcesses: IProcessItem[] = [
     {

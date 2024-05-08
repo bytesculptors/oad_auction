@@ -19,7 +19,6 @@ export const CommentItemSkeleton: FunctionComponent = () => {
 };
 
 const CommentItem: FunctionComponent<ICommentItem> = ({ content, time, user }) => {
-    console.log('CommentItem', user);
     return (
         <Box
             sx={{

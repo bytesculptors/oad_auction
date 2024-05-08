@@ -91,13 +91,12 @@ const ViewMode: React.FC = () => {
                             pr={2}
                         >
                             {comments.map((comment, index) => (
-                                <Suspense fallback={<CommentItemSkeleton />}>
-                                    <CommentItem key={index} {...comment} />
-                                </Suspense>
+                                <CommentItem key={index} {...comment} />
                             ))}
                         </Box>
                     </Box>
                 </TabPanel>
+                {/* process */}
                 <TabPanel
                     sx={{
                         height: '100%',
