@@ -1,3 +1,5 @@
+import { StaticImageData } from 'next/image';
+
 export type BidViewMode = 'comment' | 'process';
 export interface IUserInfor {
     id: string;
@@ -10,9 +12,32 @@ export interface ICommentItem {
     user: IUserInfor;
 }
 
-export const fakecomments: ICommentItem[] = [
+export interface IProcessItem {
+    amount: number;
+    time: Date;
+    user: IUserInfor;
+}
+
+export interface IProductItem {
+    name: string;
+    image: string | StaticImageData;
+    description: string;
+    price: number;
+    category: string;
+    material: string;
+    dimensions: string;
+    color: string;
+    weight: number;
+    condition: string;
+    style: string;
+    manufacturer: string;
+    year: number;
+    origin: string;
+    deposit: number;
+}
+export const fakeProcesses: IProcessItem[] = [
     {
-        content: 'Deo',
+        amount: 1000000,
         time: new Date(),
         user: {
             id: '1',
@@ -21,119 +46,38 @@ export const fakecomments: ICommentItem[] = [
         },
     },
     {
-        content: 'Dm cho bo may thang di',
+        amount: 2000000,
         time: new Date(),
         user: {
             id: '1',
-            name: 'Tran Van A',
+            name: 'Tran Van B',
             avatar: 'https://tq6.mediacdn.vn/133514250583805952/2021/6/9/photo-1-16232229002241474687644.jpg',
         },
     },
     {
-        content: 'Dm cho bo may thang di',
+        amount: 3000000,
         time: new Date(),
         user: {
             id: '1',
-            name: 'Tran Van A',
+            name: 'Tran Van C',
             avatar: 'https://tq6.mediacdn.vn/133514250583805952/2021/6/9/photo-1-16232229002241474687644.jpg',
         },
     },
     {
-        content: 'Dm cho bo may thang di',
+        amount: 4000000,
         time: new Date(),
         user: {
             id: '1',
-            name: 'Tran Van A',
+            name: 'Tran Van D',
             avatar: 'https://tq6.mediacdn.vn/133514250583805952/2021/6/9/photo-1-16232229002241474687644.jpg',
         },
     },
     {
-        content: 'Dm cho bo may thang di',
+        amount: 5000000,
         time: new Date(),
         user: {
             id: '1',
-            name: 'Tran Van A',
-            avatar: 'https://tq6.mediacdn.vn/133514250583805952/2021/6/9/photo-1-16232229002241474687644.jpg',
-        },
-    },
-    {
-        content: 'Dm cho bo may thang di',
-        time: new Date(),
-        user: {
-            id: '1',
-            name: 'Tran Van A',
-            avatar: 'https://tq6.mediacdn.vn/133514250583805952/2021/6/9/photo-1-16232229002241474687644.jpg',
-        },
-    },
-    {
-        content: 'Dm cho bo may thang di',
-        time: new Date(),
-        user: {
-            id: '1',
-            name: 'Tran Van A',
-            avatar: 'https://tq6.mediacdn.vn/133514250583805952/2021/6/9/photo-1-16232229002241474687644.jpg',
-        },
-    },
-    {
-        content: 'Dm cho bo may thang di',
-        time: new Date(),
-        user: {
-            id: '1',
-            name: 'Tran Van A',
-            avatar: 'https://tq6.mediacdn.vn/133514250583805952/2021/6/9/photo-1-16232229002241474687644.jpg',
-        },
-    },
-    {
-        content: 'Dm cho bo may thang di',
-        time: new Date(),
-        user: {
-            id: '1',
-            name: 'Tran Van A',
-            avatar: 'https://tq6.mediacdn.vn/133514250583805952/2021/6/9/photo-1-16232229002241474687644.jpg',
-        },
-    },
-    {
-        content: 'Dm cho bo may thang di',
-        time: new Date(),
-        user: {
-            id: '1',
-            name: 'Tran Van A',
-            avatar: 'https://tq6.mediacdn.vn/133514250583805952/2021/6/9/photo-1-16232229002241474687644.jpg',
-        },
-    },
-    {
-        content: 'Dm cho bo may thang di',
-        time: new Date(),
-        user: {
-            id: '1',
-            name: 'Tran Van A',
-            avatar: 'https://tq6.mediacdn.vn/133514250583805952/2021/6/9/photo-1-16232229002241474687644.jpg',
-        },
-    },
-    {
-        content: 'Dm cho bo may thang di',
-        time: new Date(),
-        user: {
-            id: '1',
-            name: 'Tran Van A',
-            avatar: 'https://tq6.mediacdn.vn/133514250583805952/2021/6/9/photo-1-16232229002241474687644.jpg',
-        },
-    },
-    {
-        content: 'Dm cho bo may thang di',
-        time: new Date(),
-        user: {
-            id: '1',
-            name: 'Tran Van A',
-            avatar: 'https://tq6.mediacdn.vn/133514250583805952/2021/6/9/photo-1-16232229002241474687644.jpg',
-        },
-    },
-    {
-        content: 'Dm cho bo may thang di',
-        time: new Date(),
-        user: {
-            id: '1',
-            name: 'Tran Van A',
+            name: 'Tran Van E',
             avatar: 'https://tq6.mediacdn.vn/133514250583805952/2021/6/9/photo-1-16232229002241474687644.jpg',
         },
     },

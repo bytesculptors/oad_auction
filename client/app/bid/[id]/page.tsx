@@ -10,25 +10,34 @@ import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Box from '@mui/material/Box';
-import Tab from '@mui/material/Tab';
-import TabContext from '@mui/lab/TabContext';
-import TabList from '@mui/lab/TabList';
-import TabPanel from '@mui/lab/TabPanel';
-import { BidViewMode, ICommentItem, fakecomments } from '@/types/bid.type';
-import CommentItem from '@/components/bidding/CommentItem';
-import { Input, TextField } from '@mui/material';
-
+import { Box, Grid, Input, TextField } from '@mui/material';
+import ViewMode from '@/components/bidding/core/ViewMode';
+import { IProductItem } from '@/types/bid.type';
+import table_lamp from '../../../assets/images/table_lamp.jpg';
+import ProductItem from '@/components/bidding/ProductItem';
+const product: IProductItem = {
+    name: 'Table Lamp',
+    image: table_lamp,
+    description:
+        'Elegantly minimal, this Model 2552 brass table lamp was designed by Josef Frank for Svenskt Tenn. Outfitted with a cheery yellow fabric shade, this sleek lamp adds a modern touch to any bedside or living room. This lamp has been rewired to the highest standards in Los Angeles.',
+    price: 150,
+    category: 'Lighting',
+    material: 'Brass, Glass',
+    dimensions: '40cm x 40cm x 60cm',
+    color: 'Gold',
+    weight: 3.2,
+    condition: 'Used',
+    style: 'Antique',
+    manufacturer: 'Vintage Lamps Co.',
+    year: 1950,
+    origin: 'Europe',
+    deposit: 150,
+};
 const RoomDetail = () => {
     const [auctionProgreeData, setAuctionProgreeData] = useState<IDataAuctionProgress[]>([]);
     const [bidIncrement, setBidIncrement] = useState(5000000);
     const [timeBidIncrement, setTimeBidIncrement] = useState(1);
-    const [viewMode, setViewMode] = useState<BidViewMode>('comment');
     const resultBid = useRef<HTMLParagraphElement>(null);
-    const [comments, setComments] = useState<ICommentItem[]>([]);
-    const handleChangeView = (event: React.SyntheticEvent, newValue: string) => {
-        setViewMode(newValue as BidViewMode);
-    };
 
     const handleSummitBid = () => {
         toast.success(resultBid ? 'Success ' + resultBid.current?.textContent : 'Fault', {
@@ -38,7 +47,6 @@ const RoomDetail = () => {
 
     useEffect(() => {
         setAuctionProgreeData(_AuctionProgressData);
-        setComments(fakecomments);
     }, []);
 
     const handleAddittion = () => {
@@ -53,12 +61,13 @@ const RoomDetail = () => {
 
     return (
         <div className="w-screen overflow-x-hidden bg-slate-100">
-            <div className="flex flex-row  justify-between gap-8 h-screen">
-                <div className="basis-3/5 flex flex-col justify-center h-full overflow-hidden items-center bg-white border-2  rounded-md border-gray-200">
-                    <p className="mt-6 hover:text-gray-500 text-sl font-semibold cursor-pointer text-black p-1">
-                        Đấu giá viên : Trần Thị Nga
-                    </p>
-                    <div className="mt-4 cursor-text text-xl flex flex-col justify-center items-center bg-blue-950 rounded-md border-green-400 border-2  text-center p-2 text-lime-600 ">
+            <Grid container className="h-screen justify-between">
+                <Grid
+                    item
+                    xs={8}
+                    className="flex flex-col h-full overflow-hidden bg-white border-2  rounded-md border-gray-200"
+                >
+                    {/* <div className="mt-4 cursor-text text-xl flex flex-col justify-center items-center bg-blue-950 rounded-md border-green-400 border-2  text-center p-2 text-lime-600 ">
                         <p>Thời gian còn lại</p>
                         <div className="flex flex-row justify-center">
                             <div className="basis-1/6 ">
@@ -71,73 +80,22 @@ const RoomDetail = () => {
                                 <p>giây</p>
                             </div>
                         </div>
-                    </div>
-
-                    <Image
-                        className="my-10 p-2 h-auto max-w-sm rounded-lg bg-sky-50 shadow-none transition-shadow duration-300 ease-in-out hover:shadow-lg hover:shadow-black/30"
-                        src={ProductData[0].imageUrl}
-                        width={250}
-                        height={250}
-                        alt="Picture of the author"
-                    />
-                    <DummyBid
-                        bid={auctionProgreeData[0] ? auctionProgreeData[0].bid : 0}
-                        bidIncrement={bidIncrement}
-                        time={timeBidIncrement}
-                        onAddition={handleAddittion}
-                        onSubtraction={handleSubtraction}
-                        onSummitBid={handleSummitBid}
-                        ref={resultBid}
-                    />
-                </div>
-
-                <div className="basis-2/5 flex flex-col h-full bg-white border-2  rounded-md border-gray-200 view-mode">
-                    {/* <AuctionProgress data={auctionProgreeData} /> */}
-
-                    <TabContext value={viewMode}>
-                        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                            <TabList onChange={handleChangeView} aria-label="lab API tabs example" variant="fullWidth">
-                                <Tab label="Comment" value="comment" />
-                                <Tab label="Process" value="process" />
-                            </TabList>
-                        </Box>
-                        <TabPanel
-                            value="comment"
-                            sx={{
-                                height: '100%',
-                                overflowY: 'hidden',
-                                padding: 0,
-                            }}
-                            // className="bg-red-400"
-                        >
-                            <Box px={4} display={'flex'} flexDirection={'column-reverse'} gap={2} height={'100%'}>
-                                <Box width={'100%'} py={1}>
-                                    <TextField
-                                        id="filled-basic"
-                                        label="Comment"
-                                        variant="outlined"
-                                        sx={{ width: '100%' }}
-                                    />
-                                </Box>
-                                <Box
-                                    display={'flex'}
-                                    flexDirection={'column-reverse'}
-                                    overflow={'auto'}
-                                    gap={2}
-                                    pt={2}
-                                    mr={-2}
-                                    pr={2}
-                                >
-                                    {comments.map((comment, index) => (
-                                        <CommentItem key={index} {...comment} />
-                                    ))}
-                                </Box>
-                            </Box>
-                        </TabPanel>
-                        <TabPanel value="process">Process</TabPanel>
-                    </TabContext>
-                </div>
-            </div>
+                    </div> */}
+                    <Box display={'flex'} flexDirection={'column'} gap={4}>
+                        <ProductItem {...product} />
+                        <DummyBid
+                            bid={auctionProgreeData[0] ? auctionProgreeData[0].bid : 0}
+                            bidIncrement={bidIncrement}
+                            time={timeBidIncrement}
+                            onAddition={handleAddittion}
+                            onSubtraction={handleSubtraction}
+                            onSummitBid={handleSummitBid}
+                            ref={resultBid}
+                        />
+                    </Box>
+                </Grid>
+                <ViewMode />
+            </Grid>
             <ToastContainer />
         </div>
     );

@@ -1,9 +1,25 @@
 'use client';
 import { ICommentItem } from '@/types/bid.type';
-import { Avatar, Box, Typography } from '@mui/material';
-import React, { FC, FunctionComponent } from 'react';
+import { Avatar, Box, Skeleton, Typography } from '@mui/material';
+import { FC, FunctionComponent, memo } from 'react';
+
+export const CommentItemSkeleton: FunctionComponent = () => {
+    return (
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                gap: 2,
+            }}
+        >
+            <Skeleton variant="circular" width={40} height={40} animation="pulse" />
+            <Skeleton variant="rectangular" sx={{ flexGrow: 1 }} height={60} />
+        </Box>
+    );
+};
 
 const CommentItem: FunctionComponent<ICommentItem> = ({ content, time, user }) => {
+    console.log('CommentItem', user);
     return (
         <Box
             sx={{
@@ -32,4 +48,4 @@ const CommentItem: FunctionComponent<ICommentItem> = ({ content, time, user }) =
     );
 };
 
-export default CommentItem;
+export default memo(CommentItem);
