@@ -1,6 +1,11 @@
 'use client';
+import { createProductApi } from '@/api/productApi';
 import InputItem from '@/components/InputItem';
+import { RootState } from '@/redux/Store';
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function createProduct() {
     const [name, setName] = useState('');
@@ -19,10 +24,40 @@ export default function createProduct() {
     const [manufacturer, setManufacturer] = useState('');
     const [year, setYear] = useState('');
     const [origin, setOrigin] = useState('');
+    const stateUser = useSelector((state: RootState) => state.reducerUser);
 
-    const handleSubmitForm = (event: React.FormEvent<HTMLButtonElement>) => {
+    const handleSubmitForm = async (event: React.FormEvent<HTMLButtonElement>) => {
         event.preventDefault();
-        console.log('Submitted form data:', { name, file, description });
+        const response = await createProductApi({
+            material: material,
+            name: name,
+            origin: origin,
+            price: parseFloat(price),
+            sellerId: stateUser._id,
+            style: style,
+            weight: parseFloat(weight),
+            year: year,
+            category: category,
+            color: color,
+            condition: condition,
+            deposit: parseInt(deposit),
+            description: description,
+            dimension: dimension,
+            duration: parseInt(duration),
+            image: file + '',
+            manufacturer: manufacturer,
+        });
+        console.log(response.status);
+
+        if (response.status === 201) {
+            toast.success('Create success', {
+                position: 'top-center',
+            });
+        } else {
+            toast.error(response.data.message, {
+                position: 'top-center',
+            });
+        }
     };
 
     return (
@@ -105,6 +140,18 @@ export default function createProduct() {
                             }}
                         />
                         <InputItem
+                            title="Material"
+                            onChangeContent={(e) => {
+                                setMaterial(e.target.value);
+                            }}
+                        />
+                        <InputItem
+                            title="Category"
+                            onChangeContent={(e) => {
+                                setCategory(e.target.value);
+                            }}
+                        />
+                        <InputItem
                             title="Condition"
                             onChangeContent={(e) => {
                                 setCondition(e.target.value);
@@ -146,6 +193,7 @@ export default function createProduct() {
                     </div>
                 </form>
             </div>
+            <ToastContainer />
         </div>
     );
 }

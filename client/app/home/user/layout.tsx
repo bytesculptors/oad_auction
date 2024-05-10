@@ -8,7 +8,7 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
     const SideBarItems: SidebarProps = {
         sideBarItems: [
             { title: 'Products', address: '/home/user', Icon: FaProductHunt },
-            { title: 'Deposit', address: '/home/user/deposit', Icon: MdAccountCircle },
+            { title: 'My wallet', address: '/home/user/deposit', Icon: MdOutlineAttachMoney },
             { title: 'Account', address: '/home/user/account', Icon: MdAccountCircle },
         ],
     };

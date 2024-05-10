@@ -1,75 +1,69 @@
+'use client';
+import { RootState } from '@/redux/Store';
+import { ThemeProvider } from '@emotion/react';
+import {
+    Box,
+    Button,
+    Checkbox,
+    Container,
+    FormControlLabel,
+    Paper,
+    TextField,
+    Typography,
+    createTheme,
+} from '@mui/material';
 import React from 'react';
+import { useSelector } from 'react-redux';
 
-export default function UserAccount() {
+const defaultTheme = createTheme();
+
+export default function AccountUser() {
+    const stateUser = useSelector((state: RootState) => state.reducerUser);
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        console.log(data.get('name'));
+        console.log(data.get('email'));
+        // console.log(stateUser);
+    };
     return (
-        <div className="h-10 w-full min-h-screen py-1 md:w-2/3 lg:w-3/4 overflow-auto">
-            <div className="p-2 md:p-4">
-                <div className="w-full px-6 pb-8 mt-8 sm:max-w-xl sm:rounded-lg">
-                    <h2 className="pl-6 text-2xl font-bold sm:text-xl">Public Profile</h2>
-                    <div className="grid max-w-2xl mx-auto mt-8">
-                        <div className="flex flex-col items-center space-y-5 sm:flex-row sm:space-y-0">
-                            <img
-                                className="object-cover w-40 h-40 p-1 rounded-full ring-2 ring-indigo-300 dark:ring-indigo-500"
-                                src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGZhY2V8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60"
-                                alt="Bordered avatar"
-                            />
-
-                            <div className="flex flex-col space-y-5 sm:ml-8">
-                                <button
-                                    type="button"
-                                    className="py-3.5 px-7 text-base font-medium text-indigo-100 focus:outline-none bg-[#202142] rounded-lg border border-indigo-200 hover:bg-indigo-900 focus:z-10 focus:ring-4 focus:ring-indigo-200 "
-                                >
-                                    Change picture
-                                </button>
-                                <button
-                                    type="button"
-                                    className="py-3.5 px-7 text-base font-medium text-indigo-900 focus:outline-none bg-white rounded-lg border border-indigo-200 hover:bg-indigo-100 hover:text-[#202142] focus:z-10 focus:ring-4 focus:ring-indigo-200 "
-                                >
-                                    Delete picture
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="items-center mt-8 sm:mt-14 text-[#202142]">
-                        <div className="flex flex-col items-center w-full mb-2 space-x-0 space-y-2 sm:flex-row sm:space-x-4 sm:space-y-0 sm:mb-6">
-                            <div className="w-full">
-                                <label className="block mb-2 text-sm font-medium text-indigo-900 dark:text-white">
-                                    Your name
-                                </label>
-                                <input
-                                    type="text"
-                                    id="first_name"
-                                    className="bg-indigo-50 border border-indigo-300 text-indigo-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 "
-                                    placeholder="Your name"
-                                    value="Jane"
-                                    required
-                                />
-                            </div>
-                        </div>
-                        <div className="mb-2 sm:mb-6">
-                            <label className="block mb-2 text-sm font-medium text-indigo-900 dark:text-white">
-                                Your email
-                            </label>
-                            <input
-                                type="email"
+        <ThemeProvider theme={defaultTheme}>
+            <Box sx={{ display: 'flex', width: '50%', mx: 'auto' }}>
+                <Container maxWidth="lg" sx={{ mt: 4, mb: 4, justifyContent: 'center', alignItems: 'center' }}>
+                    <Paper>
+                        <Box
+                            noValidate
+                            component="form"
+                            onSubmit={handleSubmit}
+                            sx={{
+                                mt: 1,
+                                p: 2,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: 4,
+                            }}
+                        >
+                            <Typography component="p" variant="h5">
+                                Thông tin tài khoản
+                            </Typography>
+                            <TextField id="name" name="name" label="name" value={stateUser.name} variant="outlined" />
+                            <TextField
                                 id="email"
-                                className="bg-indigo-50 border border-indigo-300 text-indigo-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 "
-                                placeholder="your.email@mail.com"
-                                required
+                                name="email"
+                                label="email"
+                                value={stateUser.email}
+                                variant="outlined"
                             />
-                        </div>
-
-                        <div className="flex justify-end">
-                            <button
-                                type="submit"
-                                className="text-white bg-indigo-700  hover:bg-indigo-800 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
-                            >
+                            <Typography component="p">Role : {stateUser.role}</Typography>
+                            <Typography component="p">Balance : {stateUser.balance}</Typography>
+                            {/* <FormControlLabel control={<Checkbox value="remember" color="primary" />} label="Remember me" /> */}
+                            <Button type="submit" variant="contained">
                                 Save
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                            </Button>
+                        </Box>
+                    </Paper>
+                </Container>
+            </Box>
+        </ThemeProvider>
     );
 }
