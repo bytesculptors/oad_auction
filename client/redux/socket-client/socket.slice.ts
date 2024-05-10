@@ -1,5 +1,6 @@
-import { ISocketState } from '@/types/socket.type';
-import { createSlice } from '@reduxjs/toolkit';
+import { IJoinRoom, ISocketState, IUserJoinedCallBack } from '@/types/socket.type';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { off } from 'process';
 import { Socket, io } from 'socket.io-client';
 const baseUrl: string = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 const socket: Socket = io(baseUrl, {
@@ -19,9 +20,25 @@ export const SocketSlice = createSlice({
             state.isConnected = true;
             state.socket.connect();
         },
+
         disconnectSocket: (state) => {
             state.isConnected = false;
             state.socket.disconnect();
+        },
+
+        onJoinRoom: (state, action: PayloadAction<IJoinRoom>) => {
+            state.socket.emit('join-room', action.payload);
+        },
+
+        onLeaveRoom: (state, action: PayloadAction<IJoinRoom>) => {
+            state.socket.emit('leave-room', action.payload);
+        },
+
+        onUserJoined: (state, action: PayloadAction<IUserJoinedCallBack>) => {
+            state.socket.on('user-joined', action.payload);
+        },
+        offUserJoined: (state) => {
+            state.socket.off('user-joined');
         },
     },
 });

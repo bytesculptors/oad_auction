@@ -37,6 +37,8 @@ export interface IProductItem {
     duration: number;
     timeStart: Date;
 }
+
+export type ITimeStatus = null | 'soon' | 'starting' | 'late';
 export const fakeProcesses: IProcessItem[] = [
     {
         amount: 1000000,

@@ -7,12 +7,12 @@ import ProductData from '@/data/ProductData';
 import { IAuctionProgress, IDataAuctionProgress } from '@/types/AuctionProgress.type';
 import { ITime } from '@/types/Time.type';
 import Image from 'next/image';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { use, useEffect, useMemo, useRef, useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Box, Button, Grid, Input, TextField, Typography } from '@mui/material';
 import ViewMode from '@/components/bidding/core/ViewMode';
-import { IProductItem } from '@/types/bid.type';
+import { IProductItem, ITimeStatus } from '@/types/bid.type';
 import table_lamp from '../../../assets/images/table_lamp.jpg';
 import ProductItem from '@/components/bidding/ProductItem';
 import { CountdownCircleTimer, TimeProps } from 'react-countdown-circle-timer';
@@ -23,6 +23,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/redux/Store';
 import { Socket } from 'socket.io-client';
 import { SocketActions } from '@/redux/socket-client/socket.slice';
+import { useParams } from 'next/navigation';
+import { UserState } from '@/redux/stateUser/user.state';
+import { IJoinRoom, IUserJoinedCallBack } from '@/types/socket.type';
 const fakeTime = new Date();
 fakeTime.setHours(22, 45, 0, 0);
 const product: IProductItem = {
@@ -45,21 +48,63 @@ const product: IProductItem = {
     duration: 10,
     timeStart: fakeTime,
 };
-const RoomDetail = () => {
+const RoomDetail = ({ params }: { params: { roomId: string } }) => {
     const [auctionProgreeData, setAuctionProgreeData] = useState<IDataAuctionProgress[]>([]);
     const [bidIncrement, setBidIncrement] = useState<number>(5000000);
     const [timeBidIncrement, setTimeBidIncrement] = useState(1);
-    const [isSoon, setIsSoon] = useState<boolean | null>(null);
-    const [currentPrice, setCurrentPrice] = useState<number>(product.deposit);
-    const [currentBid, setCurrentBid] = useState<number>(product.deposit);
+    const [currentPrice, setCurrentPrice] = useState<number>(0);
+    const [currentBid, setCurrentBid] = useState<number>(0);
+    const [timeStart, setTimeStart] = useState<Date | null>(null);
+    const [durationSession, setDurationSession] = useState<number | null>(null);
+    const [isSoon, setIsSoon] = useState<ITimeStatus>(null);
+    const [durationCountDown, setDurationCountDown] = useState<number | null>(null);
+    const user: UserState = useSelector((state: RootState) => state.reducerUser);
     const socket: Socket = useSelector((state: RootState) => state.reducerSocket.socket);
     const dispatch = useDispatch();
     const resultBid = useRef<HTMLParagraphElement>(null);
 
-    const duration: number = useMemo(() => {
-        if (isSoon) return (product.timeStart.getTime() - new Date().getTime()) / 1000;
-        return product.duration * 60;
+    const userJoinRoomInfor: IJoinRoom = useMemo(() => {
+        return {
+            roomId: params?.roomId,
+            user: {
+                userId: user._id,
+                name: user.name,
+            },
+        };
+    }, [user]);
+
+    useEffect(() => {
+        if (!timeStart) return;
+        if (!durationSession) return;
+        const compareTime: number = timeStart.getTime() - new Date().getTime();
+        setIsSoon(compareTime > 0 ? 'soon' : Math.abs(compareTime) < durationSession * 60 * 1000 ? 'starting' : 'late');
+    }, [timeStart]);
+
+    useEffect(() => {
+        if (isSoon === null || timeStart === null) return;
+
+        if (isSoon === 'soon') {
+            setDurationCountDown((timeStart.getTime() - new Date().getTime()) / 1000);
+        } else if (isSoon === 'starting') {
+            if (!durationSession) return;
+            setDurationCountDown(durationSession * 60);
+        } else {
+            setDurationCountDown(0);
+        }
     }, [isSoon]);
+
+    useEffect(() => {
+        if (!params?.roomId) return;
+        dispatch(SocketActions.connectSocket());
+        dispatch(SocketActions.onJoinRoom(userJoinRoomInfor));
+        dispatch(SocketActions.onUserJoined(onUserJoindedCallback));
+        setAuctionProgreeData(_AuctionProgressData);
+        return () => {
+            dispatch(SocketActions.offUserJoined());
+            dispatch(SocketActions.onLeaveRoom(userJoinRoomInfor));
+            dispatch(SocketActions.disconnectSocket());
+        };
+    }, []);
 
     const handleSummitBid = () => {
         toast.success(resultBid ? 'Success ' + resultBid.current?.textContent : 'Fault', {
@@ -67,18 +112,12 @@ const RoomDetail = () => {
         });
     };
 
-    useEffect(() => {
-        dispatch(SocketActions.connectSocket());
-        if (product.timeStart.getTime() - new Date().getTime() > 0) {
-            setIsSoon(true);
-        } else {
-            setIsSoon(false);
-        }
-        setAuctionProgreeData(_AuctionProgressData);
-        return () => {
-            dispatch(SocketActions.disconnectSocket());
-        };
-    }, []);
+    const onUserJoindedCallback: IUserJoinedCallBack = (response) => {
+        console.log(response);
+        setTimeStart(new Date(response.startTime));
+        setDurationSession(response.duration);
+        setCurrentPrice(response.price);
+    };
 
     const IncreaseHandler = () => {
         setCurrentBid((prev) => prev + bidIncrement);
@@ -87,18 +126,19 @@ const RoomDetail = () => {
     const DecreaseHandler = () => {
         setCurrentBid((prev) => {
             if (prev - bidIncrement < currentPrice) {
-                return currentPrice;
+                return prev;
             }
             return prev - bidIncrement;
         });
     };
 
     const timeHandler = ({ remainingTime }: TimeProps) => {
-        if (remainingTime === 0 && isSoon === false) {
+        if (remainingTime === 0 && (isSoon === 'starting' || isSoon === 'late')) {
             return <div className="timer">Too lale...</div>;
         }
-        if (remainingTime === 0 && isSoon === true) {
-            setIsSoon(false);
+
+        if (remainingTime === 0 && isSoon === 'soon') {
+            setIsSoon('starting');
         }
 
         return (
@@ -139,21 +179,23 @@ const RoomDetail = () => {
                                     alignItems={'center'}
                                     gap={2}
                                 >
-                                    {isSoon !== null && (
+                                    {isSoon !== null && durationSession !== null && durationCountDown !== null && (
                                         <>
-                                            <CountdownCircleTimer
-                                                isPlaying
-                                                duration={duration}
-                                                colors={['#004777', '#F7B801', '#A30000', '#A30000']}
-                                                colorsTime={formatColor(duration, [
-                                                    '#004777',
-                                                    '#F7B801',
-                                                    '#A30000',
-                                                    '#A30000',
-                                                ])}
-                                            >
-                                                {timeHandler}
-                                            </CountdownCircleTimer>
+                                            {
+                                                <CountdownCircleTimer
+                                                    isPlaying
+                                                    duration={durationCountDown}
+                                                    colors={['#004777', '#F7B801', '#A30000', '#A30000']}
+                                                    colorsTime={formatColor(durationCountDown, [
+                                                        '#004777',
+                                                        '#F7B801',
+                                                        '#A30000',
+                                                        '#A30000',
+                                                    ])}
+                                                >
+                                                    {timeHandler}
+                                                </CountdownCircleTimer>
+                                            }
                                             <Typography variant="h6">Current Price: {currentPrice} VNĐ</Typography>
                                         </>
                                     )}
@@ -203,7 +245,7 @@ const RoomDetail = () => {
                                         size="large"
                                         sx={{ minWidth: 150 }}
                                         onClick={handleSummitBid}
-                                        disabled={isSoon === true || currentBid <= currentPrice}
+                                        disabled={isSoon === 'soon' || isSoon === 'late' || currentBid <= currentPrice}
                                     >
                                         Bid
                                     </Button>

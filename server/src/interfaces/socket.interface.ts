@@ -17,6 +17,8 @@ export interface IJoinRoom {
 export interface IResponseJoinRoom {
     price: number;
     user: IClientUser;
+    startTime: Date;
+    duration: number;
 }
 
 export interface IBiddingRoom {
