@@ -169,7 +169,6 @@ export default function SignUp() {
                 </Box>
                 <Copyright sx={{ mt: 5 }} />
             </Container>
-            <ToastContainer />
         </ThemeProvider>
     );
 }

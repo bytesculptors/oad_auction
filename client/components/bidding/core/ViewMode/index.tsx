@@ -1,45 +1,41 @@
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { Box, Grid, Tab, TextField } from '@mui/material';
-import CommentItem, { CommentItemSkeleton } from '../../CommentItem';
-import { Suspense, useEffect, useRef, useState } from 'react';
-import { BidViewMode, ICommentItem, IProcessItem, fakeProcesses } from '@/types/bid.type';
+import CommentItem from '../../CommentItem';
+import { memo, useRef, useState } from 'react';
+import { BidViewMode, ICommentItem, IProcessItem } from '@/types/bid.type';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import ProcessItem from '../../ProcessItem';
-
-const ViewMode: React.FC = () => {
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/Store';
+import { UserState } from '@/redux/stateUser/user.state';
+export interface IViewModeProps {
+    comments: ICommentItem[];
+    processes: IProcessItem[];
+    onComment: (comment: ICommentItem) => void;
+}
+const ViewMode: React.FC<IViewModeProps> = ({ comments, processes, onComment }) => {
     const [viewMode, setViewMode] = useState<BidViewMode>('comment');
-    const [comments, setComments] = useState<ICommentItem[]>([]);
-    const [processes, setProcesses] = useState<IProcessItem[]>([]);
     const [commentInput, setCommentInput] = useState<string>('');
     const commentRef = useRef<HTMLInputElement>(null);
-
-    useEffect(() => {
-        setProcesses(fakeProcesses);
-    }, []);
-
+    const user: UserState = useSelector((state: RootState) => state.reducerUser);
     const handleChangeView = (event: React.SyntheticEvent, newValue: string) => {
         setViewMode(newValue as BidViewMode);
     };
 
     const commentHandler = () => {
-        setComments([
-            {
-                content: commentInput,
-                user: {
-                    id: '1',
-                    name: 'Trần Thị Nga',
-                    avatar: 'https://cdn.fakercloud.com/avatars/nilshoenson_128.jpg',
-                },
-                time: new Date(),
+        onComment({
+            content: commentInput,
+            time: new Date(),
+            user: {
+                id: user._id,
+                name: user.name,
+                avatar: 'https://tq6.mediacdn.vn/133514250583805952/2021/6/9/photo-1-16232229002241474687644.jpg',
             },
-            ...comments,
-        ]);
+        });
         setCommentInput('');
     };
     return (
         <Grid item xs={4} className="flex flex-col h-full bg-white border-2 rounded-md border-gray-200 view-mode">
-            {/* <AuctionProgress data={auctionProgreeData} /> */}
-
             <TabContext value={viewMode}>
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                     <TabList onChange={handleChangeView} aria-label="lab API tabs example" variant="fullWidth">
@@ -126,4 +122,4 @@ const ViewMode: React.FC = () => {
         </Grid>
     );
 };
-export default ViewMode;
+export default memo(ViewMode);

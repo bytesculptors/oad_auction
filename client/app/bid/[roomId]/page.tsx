@@ -1,67 +1,38 @@
 'use client';
-import AuctionProgress from '@/components/AuctionProgress';
-import DummyBid from '@/components/DummyBid';
-import TimeCountDown from '@/components/TimeCountDown';
+
 import _AuctionProgressData from '@/data/AuctionProgressData';
-import ProductData from '@/data/ProductData';
-import { IAuctionProgress, IDataAuctionProgress } from '@/types/AuctionProgress.type';
-import { ITime } from '@/types/Time.type';
-import Image from 'next/image';
-import { use, useEffect, useMemo, useRef, useState } from 'react';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { toast } from 'react-toastify';
 import { Box, Button, Grid, Input, TextField, Typography } from '@mui/material';
 import ViewMode from '@/components/bidding/core/ViewMode';
-import { IProductItem, ITimeStatus } from '@/types/bid.type';
+import { ICommentItem, IProcessItem, IProductItem, ITimeStatus } from '@/types/bid.type';
 import table_lamp from '../../../assets/images/table_lamp.jpg';
-import ProductItem from '@/components/bidding/ProductItem';
+import ProductItem, { ProductItemSkeleton } from '@/components/bidding/ProductItem';
 import { CountdownCircleTimer, TimeProps } from 'react-countdown-circle-timer';
 import { formatColor, formatTime } from '@/utils/format';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import RemoveRoundedIcon from '@mui/icons-material/RemoveRounded';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '@/redux/Store';
-import { Socket } from 'socket.io-client';
+import { RootState } from '@/redux/Store';
 import { SocketActions } from '@/redux/socket-client/socket.slice';
-import { useParams } from 'next/navigation';
 import { UserState } from '@/redux/stateUser/user.state';
-import { IJoinRoom, IUserJoinedCallBack } from '@/types/socket.type';
+import { IJoinRoom, IPlaceBidResponse, IUserJoinedCallBack } from '@/types/socket.type';
 const fakeTime = new Date();
 fakeTime.setHours(22, 45, 0, 0);
-const product: IProductItem = {
-    name: 'Table Lamp',
-    image: table_lamp,
-    description:
-        'Elegantly minimal, this Model 2552 brass table lamp was designed by Josef Frank for Svenskt Tenn. Outfitted with a cheery yellow fabric shade, this sleek lamp adds a modern touch to any bedside or living room. This lamp has been rewired to the highest standards in Los Angeles.',
-    price: 150,
-    category: 'Lighting',
-    material: 'Brass, Glass',
-    dimensions: '40cm x 40cm x 60cm',
-    color: 'Gold',
-    weight: 3.2,
-    condition: 'Used',
-    style: 'Antique',
-    manufacturer: 'Vintage Lamps Co.',
-    year: 1950,
-    origin: 'Europe',
-    deposit: 150,
-    duration: 10,
-    timeStart: fakeTime,
-};
+
 const RoomDetail = ({ params }: { params: { roomId: string } }) => {
-    const [auctionProgreeData, setAuctionProgreeData] = useState<IDataAuctionProgress[]>([]);
     const [bidIncrement, setBidIncrement] = useState<number>(5000000);
-    const [timeBidIncrement, setTimeBidIncrement] = useState(1);
     const [currentPrice, setCurrentPrice] = useState<number>(0);
     const [currentBid, setCurrentBid] = useState<number>(0);
     const [timeStart, setTimeStart] = useState<Date | null>(null);
     const [durationSession, setDurationSession] = useState<number | null>(null);
     const [isSoon, setIsSoon] = useState<ITimeStatus>(null);
     const [durationCountDown, setDurationCountDown] = useState<number | null>(null);
+    const [processes, setProcesses] = useState<IProcessItem[]>([]);
+    const [comments, setComments] = useState<ICommentItem[]>([]);
+    const [product, setProduct] = useState<IProductItem | null>(null);
     const user: UserState = useSelector((state: RootState) => state.reducerUser);
-    const socket: Socket = useSelector((state: RootState) => state.reducerSocket.socket);
     const dispatch = useDispatch();
-    const resultBid = useRef<HTMLParagraphElement>(null);
 
     const userJoinRoomInfor: IJoinRoom = useMemo(() => {
         return {
@@ -87,7 +58,7 @@ const RoomDetail = ({ params }: { params: { roomId: string } }) => {
             setDurationCountDown((timeStart.getTime() - new Date().getTime()) / 1000);
         } else if (isSoon === 'starting') {
             if (!durationSession) return;
-            setDurationCountDown(durationSession * 60);
+            setDurationCountDown(durationSession * 60 - (-timeStart.getTime() + new Date().getTime()) / 1000);
         } else {
             setDurationCountDown(0);
         }
@@ -98,25 +69,66 @@ const RoomDetail = ({ params }: { params: { roomId: string } }) => {
         dispatch(SocketActions.connectSocket());
         dispatch(SocketActions.onJoinRoom(userJoinRoomInfor));
         dispatch(SocketActions.onUserJoined(onUserJoindedCallback));
-        setAuctionProgreeData(_AuctionProgressData);
+        dispatch(SocketActions.onBidSuccess(onBidSuccessCallback));
         return () => {
+            dispatch(SocketActions.offBidSuccess());
             dispatch(SocketActions.offUserJoined());
             dispatch(SocketActions.onLeaveRoom(userJoinRoomInfor));
             dispatch(SocketActions.disconnectSocket());
         };
     }, []);
 
-    const handleSummitBid = () => {
-        toast.success(resultBid ? 'Success ' + resultBid.current?.textContent : 'Fault', {
-            position: 'top-center',
-        });
-    };
-
     const onUserJoindedCallback: IUserJoinedCallBack = (response) => {
         console.log(response);
         setTimeStart(new Date(response.startTime));
         setDurationSession(response.duration);
         setCurrentPrice(response.price);
+        setProduct((response?.product as IProductItem) || null);
+    };
+
+    const onBidSuccessCallback = (response: IPlaceBidResponse) => {
+        console.log(response);
+        setCurrentPrice(response.price);
+        setProcesses((prev) => [
+            {
+                amount: response.price,
+                time: new Date(response.time),
+                user: {
+                    id: response.userId,
+                    name: user._id === response.userId ? 'You' : response.name,
+                    avatar: 'https://tq6.mediacdn.vn/133514250583805952/2021/6/9/photo-1-16232229002241474687644.jpg',
+                },
+            },
+            ...prev,
+        ]);
+        toast(
+            user._id === response.userId
+                ? 'you have just placed bid successfully !'
+                : `${response.name} have just placed bid !`,
+            {
+                type: user._id === response.userId ? 'success' : 'warning',
+                position: 'top-center',
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            },
+        );
+    };
+
+    const handleComment = useCallback((comment: ICommentItem) => {
+        setComments((prev) => [...prev, comment]);
+    }, []);
+
+    const handleSummitBid = () => {
+        dispatch(
+            SocketActions.onPlaceBid({
+                roomId: params?.roomId,
+                user: userJoinRoomInfor.user,
+                amount: currentBid,
+            }),
+        );
     };
 
     const IncreaseHandler = () => {
@@ -143,7 +155,7 @@ const RoomDetail = ({ params }: { params: { roomId: string } }) => {
 
         return (
             <Box textAlign={'center'}>
-                {isSoon && <Typography variant="h5">Remaining</Typography>}
+                {isSoon === 'soon' && <Typography variant="h5">Start in</Typography>}
                 <Typography variant="h5">{formatTime(remainingTime)}</Typography>
             </Box>
         );
@@ -158,7 +170,8 @@ const RoomDetail = ({ params }: { params: { roomId: string } }) => {
                     className="flex flex-col h-full overflow-hidden bg-white border-2  rounded-md border-gray-200"
                 >
                     <Box display={'flex'} flexDirection={'column'} height={'100%'} gap={1} bgcolor={'#f5f5f5'}>
-                        <ProductItem {...product} />
+                        {product && <ProductItem {...product} />}
+                        {!product && <ProductItemSkeleton />}
                         <Box
                             display={'flex'}
                             mx={2}
@@ -245,7 +258,8 @@ const RoomDetail = ({ params }: { params: { roomId: string } }) => {
                                         size="large"
                                         sx={{ minWidth: 150 }}
                                         onClick={handleSummitBid}
-                                        disabled={isSoon === 'soon' || isSoon === 'late' || currentBid <= currentPrice}
+                                        // disabled={isSoon === 'soon' || isSoon === 'late' || currentBid <= currentPrice}
+                                        disabled={currentBid <= currentPrice}
                                     >
                                         Bid
                                     </Button>
@@ -254,9 +268,8 @@ const RoomDetail = ({ params }: { params: { roomId: string } }) => {
                         </Box>
                     </Box>
                 </Grid>
-                <ViewMode />
+                <ViewMode comments={comments} onComment={handleComment} processes={processes} />
             </Grid>
-            <ToastContainer />
         </div>
     );
 };
