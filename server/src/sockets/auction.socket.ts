@@ -18,7 +18,7 @@ const userExistIndex = (room: IBiddingRoom, user: IOnlineUser): number => {
     return index;
 };
 
-const onAddingOnlineUser = async (roomId: string, user: IOnlineUser): Promise<void> => {
+const onAddingOnlineUser = async (roomId: string, user: IOnlineUser): Promise<IResponseJoinRoom> => {
     if (rooms.has(roomId)) {
         const room = rooms.get(roomId);
         if (room && userExistIndex(room, user) < 0) rooms.set(roomId, { ...room, users: [...room.users, user] });
@@ -26,12 +26,14 @@ const onAddingOnlineUser = async (roomId: string, user: IOnlineUser): Promise<vo
         try {
             const biddingSession = await BiddingSessionModel.findById(roomId);
             const product = await ProductModel.findById(biddingSession?.product);
-            rooms.set(roomId, {
-                price: product?.price || 0,
-                users: [user],
-                startTime: biddingSession?.startTime as Date,
-                duration: biddingSession?.duration as number,
-            });
+            if (product) {
+                rooms.set(roomId, {
+                    price: product?.price || 0,
+                    users: [user],
+                    startTime: biddingSession?.startTime as Date,
+                    duration: biddingSession?.duration as number,
+                });
+            }
         } catch (error) {
             console.log(error);
             rooms.set(roomId, {
@@ -42,6 +44,12 @@ const onAddingOnlineUser = async (roomId: string, user: IOnlineUser): Promise<vo
             });
         }
     }
+    return {
+        price: rooms.get(roomId)?.price || 0,
+        user,
+        duration: rooms.get(roomId)?.duration || 50,
+        startTime: rooms.get(roomId)?.startTime || new Date(),
+    };
 };
 
 const onRemoveOnlineUser = (roomId: string, user: IOnlineUser): void => {
@@ -59,9 +67,9 @@ export const socketConfig = (io: Server) => {
 
         socket.on('join-room', async ({ roomId, user }: IJoinRoom) => {
             socket.join(roomId);
-            onAddingOnlineUser(roomId, { ...user, socketId: socket.id });
-            const response: IResponseJoinRoom = { price: rooms.get(roomId)?.price || 0, user };
-            socket.to(roomId).emit('user-joined', response);
+            const response: IResponseJoinRoom = await onAddingOnlineUser(roomId, { ...user, socketId: socket.id });
+            socket.to(roomId).emit('other-joined', user);
+            io.to(socket.id).emit('user-joined', response);
             console.log(rooms);
         });
 

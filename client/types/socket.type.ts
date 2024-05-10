@@ -1,3 +1,10 @@
+import { Socket } from 'socket.io-client';
+
+export interface ISocketState {
+    socket: Socket;
+    isConnected: boolean;
+}
+
 export interface IClientUser {
     userId: string;
     name: string;
@@ -38,3 +45,5 @@ export interface IPlaceBidResponse extends IClientUser {
 }
 
 export interface IWinnderResponse extends IPlaceBidResponse {}
+
+export type IUserJoinedCallBack = (response: IResponseJoinRoom) => void;

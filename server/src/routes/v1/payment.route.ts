@@ -3,5 +3,5 @@ import { Router } from 'express';
 
 const paymentRouter = Router();
 
-paymentRouter.get('/create-order', PaymentController.createOrder);
+paymentRouter.post('/create-order', PaymentController.createOrder);
 export default paymentRouter;

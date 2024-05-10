@@ -1,7 +1,7 @@
-import { IAuctionProgress } from '@/types/AuctionProgress.type';
+import { IDataAuctionProgress } from '@/types/AuctionProgress.type';
 import { List, ListSubheader } from '@mui/material';
 
-const AuctionProgress = ({ data }: IAuctionProgress) => {
+const AuctionProgress = ({ data }: { data: IDataAuctionProgress[] }) => {
     return (
         <div className=" w-9/12 basis-1/2 border-2  rounded-md border-gray-200 text-center p-3 my-2">
             <h1 className="text-xl font-bold">Diễn biến cuộc đấu giá</h1>

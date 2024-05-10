@@ -1,12 +1,12 @@
 import { IUser } from '@/types/use.type';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
-interface UserState extends IUser {}
+export interface UserState extends IUser {}
 
 const initialState: UserState = {
-    _id: '',
+    _id: '1',
     email: '',
-    name: '',
+    name: 'andrew',
     role: '',
     balance: 0,
 };
