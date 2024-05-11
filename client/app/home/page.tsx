@@ -8,13 +8,15 @@ import { RootState } from '@/redux/Store';
 import { redirect } from 'next/navigation';
 
 export default function Home() {
-    const [product, setProduct] = useState('');
+    const [keyWord, setKeyWord] = useState('');
     const isDataEmpty = !Array.isArray(ProductData) || ProductData.length < 1 || !ProductData;
     const filterProduct = ProductData.filter((item) => {
         const productName = item.name.toLowerCase();
-        return productName.includes(product.toLowerCase());
+        return productName.includes(keyWord.toLowerCase());
     });
     const stateUser = useSelector((state: RootState) => state.reducerUser);
+
+    const handleSearch = () => {};
 
     // useEffect(() => {
     //     if (stateUser._id === '') {
@@ -40,12 +42,19 @@ export default function Home() {
                     {/* <SearchBar /> */}
                     <form className="searchbar">
                         <div className="searchbar__item">
-                            <Image src="/icon-search.svg" width={20} height={20} className="ml-4" alt="Car Logo" />
+                            <Image
+                                src="/icon-search.svg"
+                                onClick={handleSearch}
+                                width={20}
+                                height={20}
+                                className="ml-4"
+                                alt="Car Logo"
+                            />
                             <input
                                 type="text"
                                 name="model"
-                                value={product}
-                                onChange={(e) => setProduct(e.target.value)}
+                                value={keyWord}
+                                onChange={(e) => setKeyWord(e.target.value)}
                                 placeholder="Searching..."
                                 className="searchbar__input"
                             />
