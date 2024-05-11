@@ -40,7 +40,7 @@ export default function Home() {
                     {/* <SearchBar /> */}
                     <form className="searchbar">
                         <div className="searchbar__item">
-                            <Image src="/car-logo.svg" width={20} height={20} className="ml-4" alt="Car Logo" />
+                            <Image src="/icon-search.svg" width={20} height={20} className="ml-4" alt="Car Logo" />
                             <input
                                 type="text"
                                 name="model"
