@@ -7,9 +7,10 @@ import ProductDetail from './ProductDetail';
 
 interface ProductCardProps {
     item: ProductProps;
+    buttonTitle?: string;
 }
 
-const ProductCard = ({ item }: ProductCardProps) => {
+const ProductCard = ({ item, buttonTitle }: ProductCardProps) => {
     const { name, imageUrl, price, category, year, style, origin } = item;
     const [isOpen, setIsOpen] = useState(false);
     return (
@@ -50,7 +51,7 @@ const ProductCard = ({ item }: ProductCardProps) => {
                         handleClick={() => setIsOpen(true)}
                     />
                     <CustomButton
-                        title="Apply for auction"
+                        title={buttonTitle ? buttonTitle : 'Apply for auction'}
                         containerStyles="w-full py-[16px] rounded-full border border-solid"
                         textStyles="text-black text-[14px] leading-[17px] font-bold"
                     />
