@@ -1,4 +1,5 @@
 import request from '@/lib/axios';
+import { IProduct } from '@/types/product.type';
 
 interface ICreateProduct {
     sellerId: string;
@@ -105,38 +106,13 @@ interface IGetProduct {
     sellerId: string;
 }
 
-interface IProduct {
-    _id: string;
-    duration: number;
-    status: number;
-    startTime: string;
-    product: {
-        _id: string;
-        name: string;
-        price: number;
-        deposit: number;
-        description: string;
-        image: string;
-        category: string;
-        material: string;
-        dimension: string;
-        color: string;
-        weight: number;
-        condition: string;
-        style: string;
-        manufacturer: string;
-        year: number;
-        origin: string;
-    };
-}
-
 interface IResponProduct {
     data: IProduct[];
     status: number;
     message?: string;
 }
 
-const getProducts = async (data: IGetProduct, status: number) => {
+const getProductByIdSeller = async (data: IGetProduct, status?: number) => {
     console.log(data);
 
     var _response: IResponProduct = {
@@ -147,13 +123,10 @@ const getProducts = async (data: IGetProduct, status: number) => {
     let config = {
         method: 'get',
         maxBodyLength: Infinity,
-        url: `http://localhost:4848/v1/seller/get-products?status${status}`,
+        url: `http://localhost:4848/v1/seller/get-products/${data.sellerId}?status${status}`,
         headers: {
             'Content-Type': 'application/json',
         },
-        data: JSON.stringify({
-            sellerId: '6637af904d9efa1ee95afd5a',
-        }),
     };
 
     await request
@@ -168,8 +141,8 @@ const getProducts = async (data: IGetProduct, status: number) => {
                 _response.status = e.response.status;
             }
         });
-    console.log(_response);
+    // console.log(_response);
     return _response;
 };
 
-export { createProductApi, getProducts };
+export { createProductApi, getProductByIdSeller };
