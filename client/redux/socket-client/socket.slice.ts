@@ -1,4 +1,13 @@
-import { IBidSuccessCallBack, IJoinRoom, IPlaceBid, ISocketState, IUserJoinedCallBack } from '@/types/socket.type';
+import {
+    IBidSuccessCallBack,
+    ICommentCallBack,
+    IJoinRoom,
+    INewComment,
+    IPlaceBid,
+    ISocketState,
+    IUserJoinedCallBack,
+    IWinnerAnnouncedCallBack,
+} from '@/types/socket.type';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { off } from 'process';
 import { Socket, io } from 'socket.io-client';
@@ -48,6 +57,24 @@ export const SocketSlice = createSlice({
         },
         offBidSuccess: (state) => {
             state.socket.off('bid-success');
+        },
+        onWinnerAnnounce: (state, action: PayloadAction<string>) => {
+            state.socket.emit('winner-announce', action.payload);
+        },
+        onWinnerAnnounced: (state, action: PayloadAction<IWinnerAnnouncedCallBack>) => {
+            state.socket.on('winner-announced', action.payload);
+        },
+        offWinnerAnnounced: (state) => {
+            state.socket.off('winner-announced');
+        },
+        onNewComment: (state, action: PayloadAction<INewComment>) => {
+            state.socket.emit('new-comment', action.payload);
+        },
+        onNewCommentReceived: (state, action: PayloadAction<ICommentCallBack>) => {
+            state.socket.on('new-commented', action.payload);
+        },
+        offNewCommentReceived: (state) => {
+            state.socket.off('new-commented');
         },
     },
 });

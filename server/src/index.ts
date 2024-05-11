@@ -10,6 +10,7 @@ import { route } from '@routes/index';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { socketConfig } from './sockets/auction.socket';
+import fileUpload from 'express-fileupload';
 dotenv.config();
 
 const app: Express = express();
@@ -29,6 +30,11 @@ app.use(
 );
 app.use(morgan('common'));
 app.use(cookieParser());
+app.use(
+    fileUpload({
+        limits: { fileSize: 50 * 1024 * 1024 },
+    }),
+);
 route(app);
 app.get('/', (req: Request, res: Response) => {
     res.status(200).json('Hello everyone, this is auction app');

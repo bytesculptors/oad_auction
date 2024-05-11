@@ -12,6 +12,9 @@ export interface ENV_VAL extends DotenvParseOutput {
     VNP_TMN_CODE: string;
     VNP_HASH_SECRET: string;
     VNP_RETURN_URL: string;
+    CLOUDINARY_NAME: string;
+    CLOUDINARY_KEY: string;
+    CLOUDINARY_SECRET: string;
 }
 
 const data = config({

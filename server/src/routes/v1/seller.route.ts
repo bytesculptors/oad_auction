@@ -4,6 +4,7 @@ import { Router } from 'express';
 const sellerRouter = Router();
 
 sellerRouter.post('/create-product', SellerController.createProduct);
+sellerRouter.post('/upload-image', SellerController.uploadImage);
 sellerRouter.patch('/update-product/:productId', SellerController.updateProduct);
 sellerRouter.post('/request-review/:productId', SellerController.requestApprovaling);
 sellerRouter.get('/get-products/:sellerId', SellerController.getProducts);

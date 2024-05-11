@@ -43,3 +43,18 @@ export interface IPlaceBidResponse extends IClientUser {
 }
 
 export interface IWinnerResponse extends IPlaceBidResponse {}
+export interface INewComment extends IJoinRoom {
+    message: string;
+    avatar: string;
+}
+
+export interface IUserInfor {
+    id: string;
+    name: string;
+    avatar: string;
+}
+export interface ICommentItem {
+    content: string;
+    time: Date;
+    user: IUserInfor;
+}

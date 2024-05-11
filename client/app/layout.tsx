@@ -3,6 +3,7 @@ import './globals.css';
 import Providers from '@/redux/provider';
 import type { Metadata } from 'next';
 import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 export const metadata: Metadata = {
     title: 'Antique Auction',
     description: 'A website which will take you back to the 16th century',
