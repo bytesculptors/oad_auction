@@ -88,6 +88,7 @@ export const socketConfig = (io: Server) => {
         });
 
         socket.on('place-bid', ({ roomId, amount, user }: IPlaceBid) => {
+            console.log('place-bid', roomId, amount, user);
             const room = rooms.get(roomId);
             if (!room) return;
             if (amount <= room.price) return;

@@ -15,7 +15,7 @@ dotenv.config();
 const app: Express = express();
 app.use(
     cors({
-        origin: '*',
+        origin: 'http://localhost:3000',
         methods: ['GET', 'PUT', 'PATCH', 'POST', 'DELETE'],
     }),
 );
@@ -36,7 +36,7 @@ app.get('/', (req: Request, res: Response) => {
 const server = createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: '*',
+        origin: 'http://localhost:3000',
     },
 });
 socketConfig(io);

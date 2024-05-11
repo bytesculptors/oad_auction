@@ -2,7 +2,7 @@ import { IBidSuccessCallBack, IJoinRoom, IPlaceBid, ISocketState, IUserJoinedCal
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { off } from 'process';
 import { Socket, io } from 'socket.io-client';
-const baseUrl: string = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+const baseUrl: string = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000';
 const socket: Socket = io(baseUrl, {
     autoConnect: false,
 });
