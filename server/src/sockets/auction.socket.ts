@@ -64,6 +64,10 @@ const onRemoveOnlineUser = (roomId: string, user: IOnlineUser): void => {
     rooms.set(roomId, { ...room, users: room.users });
 };
 
+const onRemoveRoom = (roomId: string): void => {
+    if (rooms.has(roomId)) rooms.delete(roomId);
+};
+
 export const socketConfig = (io: Server) => {
     io.on('connection', (socket) => {
         console.log('User connected: ', socket.id);
@@ -98,7 +102,9 @@ export const socketConfig = (io: Server) => {
             if (!room) return;
             if (room.winner) {
                 const winnerResponse: IWinnerResponse = { price: room.price, ...room.winner, time: new Date() };
-                socket.to(roomId).emit('winner-announced', winnerResponse);
+                io.to(roomId).emit('winner-announced', winnerResponse);
+                onRemoveRoom(roomId);
+                io.to(roomId).socketsLeave(roomId);
             }
         });
 
