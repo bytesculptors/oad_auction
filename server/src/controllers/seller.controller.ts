@@ -19,23 +19,36 @@ export default class SellerController {
      * @returns product data
      */
     static createProduct = async (req: Request, res: Response) => {
+        const { duration, startTime, sellerId, ...data } = <ICreateProduct>req.body;
+        if (!data.description || !duration || !data.name || !data.price || !sellerId || !data.deposit)
+            return res.status(400).json({ message: 'All fields are required...' });
         if (!req?.files?.image) return res.status(400).json({ message: 'Image is required!' });
         const files = req?.files as any;
         try {
-            const uploadStream = cloudinary.uploader.upload_chunked_stream(
-                {
-                    resource_type: 'image',
-                    folder: 'OOAD/images',
-                    chunk_size: 50 * 1024 * 1024,
-                },
-                async (error, result) => {
-                    if (error) return res.status(500).json({ message: 'Something went wrong !' });
-                    if (!result) return res.status(500).json({ message: 'Something went wrong !' });
-                    const { duration, startTime, sellerId, ...data } = <ICreateProduct>req.body;
-                    if (!data.description || !duration || !data.name || !data.price || !sellerId || !data.deposit)
-                        return res.status(400).json({ message: 'All fields are required...' });
-                    const seller = await UserModel.findById(sellerId);
-                    if (!seller) return res.status(400).json({ message: 'Seller did not exist yet!' });
+            const seller = await UserModel.findById(sellerId);
+            if (!seller) return res.status(400).json({ message: 'Seller did not exist yet!' });
+            const product = await ProductModel.findOne({
+                sellerId,
+                name: data.name,
+            });
+            if (product) return res.status(400).json({ message: 'Product existed!' });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ message: 'Something went wrong !' });
+        }
+        const uploadStream = cloudinary.uploader.upload_chunked_stream(
+            {
+                resource_type: 'image',
+                folder: 'OOAD/images',
+                chunk_size: 50 * 1024 * 1024,
+            },
+            async (error, result) => {
+                if (error) return res.status(500).json({ message: 'Something went wrong !' });
+                if (!result) return res.status(500).json({ message: 'Something went wrong !' });
+                const { duration, startTime, sellerId, ...data } = <ICreateProduct>req.body;
+                if (!data.description || !duration || !data.name || !data.price || !sellerId || !data.deposit)
+                    return res.status(400).json({ message: 'All fields are required...' });
+                try {
                     const newProduct = await ProductModel.create({
                         sellerId,
                         ...data,
@@ -60,13 +73,13 @@ export default class SellerController {
                         },
                     };
                     res.status(201).json({ data: payload });
-                },
-            );
-            streamifer.createReadStream(files?.image?.data as unknown as Buffer).pipe(uploadStream);
-        } catch (error) {
-            console.log(error);
-            res.status(500).json({ message: 'Something went wrong !' });
-        }
+                } catch (error) {
+                    console.log(error);
+                    res.status(500).json({ message: 'Something went wrong !' });
+                }
+            },
+        );
+        streamifer.createReadStream(files?.image?.data as unknown as Buffer).pipe(uploadStream);
     };
 
     static updateProduct = async (req: Request, res: Response) => {

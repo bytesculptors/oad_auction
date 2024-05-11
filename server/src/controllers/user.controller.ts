@@ -1,4 +1,5 @@
 import { SearchProduct } from '@constants/search';
+import ProductStatus from '@constants/status';
 import { Request, Response } from '@customes/auth.type';
 import { IBiddingData, IBiddingProduct, IFindProduct, IProductPayload } from '@interfaces/product.interface';
 import { BiddingSessionModel } from '@models/bases/bidding-session.base';
@@ -97,11 +98,15 @@ export class UserController {
                 .limit(limit)
                 .skip(page)
                 .exec();
+
             const productIds = products.map((item) => {
                 return item._id;
             });
 
-            const biddingSessions = await BiddingSessionModel.find({ product: { $in: productIds } })
+            const biddingSessions = await BiddingSessionModel.find({
+                product: { $in: productIds },
+                status: ProductStatus.ACTIVE,
+            })
                 .select(biddingSelects)
                 .populate(BiddingRefOptions());
             if (!biddingSessions) return res.status(200).json({ data: [] });
