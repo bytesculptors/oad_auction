@@ -11,24 +11,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/Store';
 import { FiRefreshCcw } from 'react-icons/fi';
 import { IProduct } from '@/types/product.type';
-import StickyHeadTable from '@/components/table/StickyHeadTable';
-
-interface Column {
-    id: 'id' | 'name' | 'description' | 'price' | 'category' | 'status';
-    label: string;
-    minWidth?: number;
-    align?: 'right';
-    format?: (value: number) => string;
-}
-
-interface Data {
-    id: string;
-    name: string;
-    description: string;
-    price: number;
-    category: string;
-    status: string;
-}
+import StickyHeadTable, { Data } from '@/components/table/StickyHeadTable';
 
 export default function SellerProducts() {
     const stateUser = useSelector((state: RootState) => state.reducerUser);
@@ -38,15 +21,6 @@ export default function SellerProducts() {
     const handleChange = (event: SelectChangeEvent) => {
         setSort(event.target.value as string);
     };
-
-    const columns: readonly Column[] = [
-        { id: 'id', label: 'Id', minWidth: 50 },
-        { id: 'name', label: 'Name', minWidth: 170 },
-        { id: 'description', label: 'Description', minWidth: 170 },
-        { id: 'price', label: 'Price', minWidth: 170 },
-        { id: 'category', label: 'Category', minWidth: 170 },
-        { id: 'status', label: 'Status', minWidth: 170 },
-    ];
 
     const handleResetApi = async () => {
         const response = await getProductByIdSeller({
@@ -74,10 +48,23 @@ export default function SellerProducts() {
                     _productList.push({
                         category: item.product.category,
                         description: item.product.description,
-                        id: item._id,
+                        id: item.product._id,
                         name: item.product.name,
                         price: item.product.price,
                         status: status,
+                        action: 'edit',
+                        image: item.product.image,
+                        color: item.product.color,
+                        condition: item.product.condition,
+                        deposit: item.product.deposit,
+                        dimension: item.product.dimension,
+                        duration: item.duration,
+                        manufacturer: item.product.manufacturer,
+                        material: item.product.material,
+                        origin: item.product.origin,
+                        style: item.product.style,
+                        weight: item.product.weight,
+                        year: item.product.year,
                     });
                 }
             });
@@ -115,7 +102,7 @@ export default function SellerProducts() {
                 </div>
             </Box>
 
-            <StickyHeadTable columns={columns} rows={productList} />
+            <StickyHeadTable rows={productList} />
         </div>
     );
 }

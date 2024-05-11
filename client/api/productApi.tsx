@@ -145,4 +145,47 @@ const getProductByIdSeller = async (data: IGetProduct, status?: number) => {
     return _response;
 };
 
-export { createProductApi, getProductByIdSeller };
+interface _IResponseAdminGetProduct extends IProduct {
+    sellerId: {
+        _id: string;
+        name: string;
+    };
+}
+
+interface IResponseAdminGetProduct {
+    data: _IResponseAdminGetProduct[];
+    status: number;
+    messeage?: string;
+}
+
+const adminGetProduct = async (status?: number) => {
+    var _response: IResponseAdminGetProduct = {
+        data: [],
+        status: 0,
+        messeage: '',
+    };
+
+    await request
+        .get<IResponseAdminGetProduct>('/v1/admin/get-products', {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            params: {
+                status: status,
+            },
+        })
+        .then((response) => {
+            _response.data = response.data.data;
+            _response.status = response.status;
+        })
+        .catch((e) => {
+            if (e.response) {
+                _response.data = e.response.data;
+                _response.status = e.response.status;
+            }
+        });
+    // console.log(_response);
+    return _response;
+};
+
+export { createProductApi, getProductByIdSeller, adminGetProduct };

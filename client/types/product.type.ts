@@ -1,3 +1,5 @@
+import { ProductProps } from '.';
+
 export interface IProduct {
     _id: string;
     duration: number;
@@ -20,5 +22,13 @@ export interface IProduct {
         manufacturer: string;
         year: number;
         origin: string;
+    };
+}
+
+export interface IProductWithSeller {
+    product: ProductProps;
+    sellerId: {
+        _id: string;
+        name: string;
     };
 }

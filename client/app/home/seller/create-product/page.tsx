@@ -2,6 +2,8 @@
 import { createProductApi } from '@/api/productApi';
 import InputItem from '@/components/InputItem';
 import { RootState } from '@/redux/Store';
+import { Box } from '@mui/material';
+import Image from 'next/image';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { toast, ToastContainer } from 'react-toastify';
@@ -60,13 +62,24 @@ export default function createProduct() {
         }
     };
 
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+    };
+
     return (
         <div className=" flex items-center justify-center w-full mx-auto bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
             <div className=" w-full space-y-8 bg-white shadow-md rounded-lg p-6">
                 <div>
                     <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Create Product</h2>
                 </div>
-                <form className="mt-8 h-80  space-y-6 overflow-auto " action="#" method="POST">
+                <Box
+                    component="form"
+                    noValidate
+                    onSubmit={handleSubmit}
+                    sx={{ mt: 1 }}
+                    className="mt-8 h-80  space-y-6 overflow-auto "
+                >
                     <div className="rounded-md shadow-sm -space-y-px">
                         <InputItem title="Name" onChangeContent={(event) => setName(event.target.value)} />
                         <InputItem
@@ -81,7 +94,7 @@ export default function createProduct() {
                                 setDeposit(e.target.value);
                             }}
                         />
-
+                        {file && <img width={350} height={350} src={URL.createObjectURL(file)} alt="Uploaded" />}
                         <div>
                             <label htmlFor="description" className="sr-only">
                                 Image
@@ -184,14 +197,14 @@ export default function createProduct() {
                     </div>
                     <div>
                         <button
-                            onClick={handleSubmitForm}
+                            // onClick={handleSubmitForm}
                             type="submit"
                             className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                         >
                             Create Product
                         </button>
                     </div>
-                </form>
+                </Box>
             </div>
             <ToastContainer />
         </div>
