@@ -5,10 +5,13 @@ import ProductData from '@/data/ProductData';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/Store';
+import { searchProductsApi } from '@/api/searchApi';
+import IProduct from '@/api/searchApi';
 import { redirect } from 'next/navigation';
 
 export default function Home() {
     const [keyWord, setKeyWord] = useState('');
+    const [searchResults, setSearchResults] = useState<IProduct[]>([]);
     const isDataEmpty = !Array.isArray(ProductData) || ProductData.length < 1 || !ProductData;
     const filterProduct = ProductData.filter((item) => {
         const productName = item.name.toLowerCase();
@@ -16,7 +19,20 @@ export default function Home() {
     });
     const stateUser = useSelector((state: RootState) => state.reducerUser);
 
-    const handleSearch = () => {};
+    const handleSearch = async () => {
+        try {
+            const response = await searchProductsApi(keyWord);
+            console.log(response.data);
+            if (response.status === 200) {
+                setSearchResults(response.data);
+                console.log(searchResults);
+            } else {
+                console.error('Error fetching products:', response.status);
+            }
+        } catch (error) {
+            console.error('Error fetching products:', error);
+        }
+    };
 
     // useEffect(() => {
     //     if (stateUser._id === '') {
@@ -62,13 +78,10 @@ export default function Home() {
                     </form>
                 </div>
 
-                {!isDataEmpty ? (
+                {/* {!isDataEmpty ? (
                     <section>
                         <div className="home__cars-wrapper">
-                            {/* {ProductData.map((item) => (
-                                <ProductCard item={item} />
-                            ))} */}
-                            {filterProduct.map((item) => (
+                            {searchResults.map((item) => (
                                 <ProductCard item={item} />
                             ))}
                         </div>
@@ -77,7 +90,7 @@ export default function Home() {
                     <div>
                         <h2 className="text-black text-xl font-bold">Oops, no results!!</h2>
                     </div>
-                )}
+                )} */}
             </div>
         </main>
     );
