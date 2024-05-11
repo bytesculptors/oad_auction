@@ -23,7 +23,6 @@ export interface ISchemaProduct extends Document {
 export interface ICreateProduct {
     sellerId: string;
     name: string;
-    image: string;
     price: number;
     deposit: number;
     description: string;

@@ -1,7 +1,10 @@
+import ProductStatus from '@constants/status';
 import { IProductItem } from '@interfaces/product.interface';
 import {
     IBiddingRoom,
+    ICommentItem,
     IJoinRoom,
+    INewComment,
     IOnlineUser,
     IPlaceBid,
     IPlaceBidResponse,
@@ -68,6 +71,22 @@ const onRemoveRoom = (roomId: string): void => {
     if (rooms.has(roomId)) rooms.delete(roomId);
 };
 
+const updateWinnderBiddingSession = async (roomId: string, price: number, winnerId: string): Promise<any> => {
+    try {
+        const biddingSession = await BiddingSessionModel.findOneAndUpdate(
+            { _id: roomId },
+            { winnerId, status: ProductStatus.SOLD },
+            { upsert: true },
+        );
+        if (!biddingSession) return undefined;
+        const product = await ProductModel.findOneAndUpdate({ _id: biddingSession?.product }, { price });
+        return biddingSession;
+    } catch (error) {
+        console.log(error);
+        return undefined;
+    }
+};
+
 export const socketConfig = (io: Server) => {
     io.on('connection', (socket) => {
         console.log('User connected: ', socket.id);
@@ -88,24 +107,43 @@ export const socketConfig = (io: Server) => {
         });
 
         socket.on('place-bid', ({ roomId, amount, user }: IPlaceBid) => {
-            console.log('place-bid', roomId, amount, user);
             const room = rooms.get(roomId);
             if (!room) return;
             if (amount <= room.price) return;
-            if (room.startTime.getTime() + room.duration * 60 * 1000 < Date.now()) return;
+            if (
+                room.startTime.getTime() + room.duration * 60 * 1000 < new Date().getTime() ||
+                room.startTime.getTime() > new Date().getTime()
+            )
+                return;
             rooms.set(roomId, { ...room, winner: user, price: amount });
             const response: IPlaceBidResponse = { price: amount, ...user, time: new Date() };
             io.to(roomId).emit('bid-success', response);
         });
 
-        socket.on('winner-announce', (roomId: string) => {
+        socket.on('new-comment', (data: INewComment) => {
+            const response: ICommentItem = {
+                content: data.message,
+                time: new Date(),
+                user: {
+                    id: data.user.userId,
+                    name: data.user.name,
+                    avatar: data.avatar,
+                },
+            };
+            io.to(data.roomId).emit('new-commented', response);
+        });
+
+        socket.on('winner-announce', async (roomId: string) => {
             const room = rooms.get(roomId);
             if (!room) return;
             if (room.winner) {
                 const winnerResponse: IWinnerResponse = { price: room.price, ...room.winner, time: new Date() };
-                io.to(roomId).emit('winner-announced', winnerResponse);
-                onRemoveRoom(roomId);
-                io.to(roomId).socketsLeave(roomId);
+                const response = await updateWinnderBiddingSession(roomId, room.price, room.winner.userId);
+                if (response) {
+                    io.to(roomId).emit('winner-announced', winnerResponse);
+                    onRemoveRoom(roomId);
+                    io.to(roomId).socketsLeave(roomId);
+                }
             }
         });
 
