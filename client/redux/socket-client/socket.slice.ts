@@ -1,4 +1,4 @@
-import { IJoinRoom, ISocketState, IUserJoinedCallBack } from '@/types/socket.type';
+import { IBidSuccessCallBack, IJoinRoom, IPlaceBid, ISocketState, IUserJoinedCallBack } from '@/types/socket.type';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { off } from 'process';
 import { Socket, io } from 'socket.io-client';
@@ -39,6 +39,15 @@ export const SocketSlice = createSlice({
         },
         offUserJoined: (state) => {
             state.socket.off('user-joined');
+        },
+        onPlaceBid: (state, action: PayloadAction<IPlaceBid>) => {
+            state.socket.emit('place-bid', action.payload);
+        },
+        onBidSuccess: (state, action: PayloadAction<IBidSuccessCallBack>) => {
+            state.socket.on('bid-success', action.payload);
+        },
+        offBidSuccess: (state) => {
+            state.socket.off('bid-success');
         },
     },
 });

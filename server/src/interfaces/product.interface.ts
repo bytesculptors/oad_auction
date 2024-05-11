@@ -61,6 +61,7 @@ export interface IUpdateProduct {
     year?: number;
     origin?: string;
 }
+
 export interface IProductPayload {
     _id: string;
     name: string;
@@ -79,6 +80,8 @@ export interface IProductPayload {
     year: number;
     origin: string;
 }
+
+export interface IProductItem extends IProductPayload {}
 
 export interface IBiddingData {
     _id: string;

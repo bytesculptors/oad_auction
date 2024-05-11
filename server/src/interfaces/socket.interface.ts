@@ -1,3 +1,5 @@
+import { IProductItem } from './product.interface';
+
 export interface IClientUser {
     userId: string;
     name: string;
@@ -19,6 +21,7 @@ export interface IResponseJoinRoom {
     user: IClientUser;
     startTime: Date;
     duration: number;
+    product?: IProductItem;
 }
 
 export interface IBiddingRoom {
@@ -27,6 +30,7 @@ export interface IBiddingRoom {
     startTime: Date;
     duration: number;
     winner?: IClientUser;
+    product?: IProductItem;
 }
 
 export interface IPlaceBid extends IJoinRoom {
@@ -35,6 +39,7 @@ export interface IPlaceBid extends IJoinRoom {
 
 export interface IPlaceBidResponse extends IClientUser {
     price: number;
+    time: Date;
 }
 
-export interface IWinnderResponse extends IPlaceBidResponse {}
+export interface IWinnerResponse extends IPlaceBidResponse {}

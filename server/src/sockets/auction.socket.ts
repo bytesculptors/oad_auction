@@ -1,3 +1,4 @@
+import { IProductItem } from '@interfaces/product.interface';
 import {
     IBiddingRoom,
     IJoinRoom,
@@ -5,7 +6,7 @@ import {
     IPlaceBid,
     IPlaceBidResponse,
     IResponseJoinRoom,
-    IWinnderResponse,
+    IWinnerResponse,
 } from '@interfaces/socket.interface';
 import { BiddingSessionModel } from '@models/bases/bidding-session.base';
 import { ProductModel } from '@models/bases/product.base';
@@ -32,6 +33,7 @@ const onAddingOnlineUser = async (roomId: string, user: IOnlineUser): Promise<IR
                     users: [user],
                     startTime: biddingSession?.startTime as Date,
                     duration: biddingSession?.duration as number,
+                    product: product as IProductItem,
                 });
             }
         } catch (error) {
@@ -49,6 +51,7 @@ const onAddingOnlineUser = async (roomId: string, user: IOnlineUser): Promise<IR
         user,
         duration: rooms.get(roomId)?.duration || 50,
         startTime: rooms.get(roomId)?.startTime || new Date(),
+        product: rooms.get(roomId)?.product,
     };
 };
 
@@ -84,18 +87,18 @@ export const socketConfig = (io: Server) => {
             const room = rooms.get(roomId);
             if (!room) return;
             if (amount <= room.price) return;
-            if (room.startTime.getTime() + room.duration * 1000 < Date.now()) return;
+            if (room.startTime.getTime() + room.duration * 60 * 1000 < Date.now()) return;
             rooms.set(roomId, { ...room, winner: user, price: amount });
-            const response: IPlaceBidResponse = { price: amount, ...user };
-            socket.to(roomId).emit('bid-success', response);
+            const response: IPlaceBidResponse = { price: amount, ...user, time: new Date() };
+            io.to(roomId).emit('bid-success', response);
         });
 
-        socket.on('winnder-announce', (roomId: string) => {
+        socket.on('winner-announce', (roomId: string) => {
             const room = rooms.get(roomId);
             if (!room) return;
             if (room.winner) {
-                const winnderResponse: IWinnderResponse = { price: room.price, ...room.winner };
-                socket.to(roomId).emit('winner-announced', winnderResponse);
+                const winnerResponse: IWinnerResponse = { price: room.price, ...room.winner, time: new Date() };
+                socket.to(roomId).emit('winner-announced', winnerResponse);
             }
         });
 

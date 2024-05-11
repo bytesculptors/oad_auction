@@ -105,7 +105,7 @@ export default class SellerController {
 
     static getProducts = async (req: Request, res: Response) => {
         const { status: stringStatus } = <IQueryProduct>(<unknown>req.query);
-        const { sellerId } = <{ sellerId: string }>req.body;
+        const { sellerId } = <{ sellerId: string }>req.params;
         if (!sellerId) return res.status(400).json({ message: 'SellerId is required!' });
         const status = parseInt(stringStatus);
         if (!isNaN(status) && !isValidStatus(status)) return res.status(400).json({ message: 'status is invalid' });

@@ -1,7 +1,61 @@
 import { IProductItem } from '@/types/bid.type';
-import { Box, Typography } from '@mui/material';
+import { Box, Skeleton, Typography } from '@mui/material';
 import Image from 'next/image';
 import { FC } from 'react';
+
+export const ProductItemSkeleton: FC = () => {
+    return (
+        <Box display={'flex'} mx={2} mt={1} py={2} px={2} gap={4} bgcolor={'white'} borderRadius={3} boxShadow={2}>
+            <Skeleton
+                variant="rectangular"
+                width={300}
+                height={300}
+                animation="wave"
+                sx={{
+                    borderRadius: 3,
+                }}
+            />
+            <Box flex={1} display={'flex'} flexDirection={'column'} gap={2}>
+                <Skeleton
+                    variant="rectangular"
+                    width={'100%'}
+                    height={60}
+                    animation="wave"
+                    sx={{
+                        borderRadius: 3,
+                    }}
+                />
+                <Skeleton
+                    variant="rectangular"
+                    width={'100%'}
+                    height={60}
+                    animation="wave"
+                    sx={{
+                        borderRadius: 3,
+                    }}
+                />
+                <Skeleton
+                    variant="rectangular"
+                    width={'100%'}
+                    height={60}
+                    animation="wave"
+                    sx={{
+                        borderRadius: 3,
+                    }}
+                />
+                <Skeleton
+                    variant="rectangular"
+                    width={'100%'}
+                    height={60}
+                    animation="wave"
+                    sx={{
+                        borderRadius: 3,
+                    }}
+                />
+            </Box>
+        </Box>
+    );
+};
 
 const ProductItem: FC<IProductItem> = ({ ...product }) => {
     return (

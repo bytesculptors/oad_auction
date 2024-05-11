@@ -8,23 +8,18 @@ import { isValidAdminAccept, isValidStatus } from '@utils/validate.util';
 export default class AdminController {
     static getProducts = async (req: Request, res: Response) => {
         const { status: stringStatus } = <IQueryProduct>(<unknown>req.query);
-        const { sellerId } = <{ sellerId: string }>req.body;
-        if (!sellerId) return res.status(400).json({ message: 'SellerId is required!' });
         const status = parseInt(stringStatus);
         if (!isNaN(status) && !isValidStatus(status)) return res.status(400).json({ message: 'status is invalid' });
         try {
             const biddingSessions = await BiddingSessionModel.find(
                 !isNaN(status)
                     ? {
-                          sellerId,
                           status: status,
                       }
-                    : {
-                          sellerId,
-                      },
+                    : {},
             )
                 .select(biddingSelects)
-                .populate(BiddingRefOptions({ sellerId }));
+                .populate(BiddingRefOptions());
             res.status(200).json({ data: biddingSessions });
         } catch (error) {
             console.log(error);

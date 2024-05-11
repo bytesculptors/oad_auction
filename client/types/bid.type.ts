@@ -19,6 +19,7 @@ export interface IProcessItem {
 }
 
 export interface IProductItem {
+    _id: string;
     name: string;
     image: string | StaticImageData;
     description: string;
@@ -34,8 +35,6 @@ export interface IProductItem {
     year: number;
     origin: string;
     deposit: number;
-    duration: number;
-    timeStart: Date;
 }
 
 export type ITimeStatus = null | 'soon' | 'starting' | 'late';
