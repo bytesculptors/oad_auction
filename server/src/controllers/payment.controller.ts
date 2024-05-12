@@ -9,6 +9,9 @@ import { UserModel } from '@models/bases/user.base';
 import { PaymentModel } from '@models/bases/payment.base';
 import { paymentSelects } from '@references/selects/payment-result.select copy';
 import { PaymentRefOptios, UserRefOptions } from '@references/populate-opts/bidding.ref';
+import { BiddingSessionModel } from '@models/bases/bidding-session.base';
+import ProductStatus from '@constants/status';
+import { ProductModel } from '@models/bases/product.base';
 
 export default class PaymentController {
     static createOrder = async (req: Request, res: Response) => {
@@ -167,7 +170,30 @@ export default class PaymentController {
                 .select(paymentSelects)
                 .populate(PaymentRefOptios());
             return res.status(200).json({ data: paymentData });
-        } catch (error) {}
-        return res.status(200).json({ message: 'Success' });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ message: 'Something went wrong !' });
+        }
+    };
+
+    static payProduct = async (req: Request, res: Response) => {
+        try {
+            const { userId } = <{ userId: string }>req.params;
+            const { productId, _id } = <{ productId: string; _id: string }>req.body;
+            if (!userId || !productId || !_id) return res.status(400).json({ message: 'All fields are required...' });
+            const biddingSession = await BiddingSessionModel.findOneAndUpdate(
+                { _id, product: productId, winnerId: userId, status: ProductStatus.PAYING },
+                { status: ProductStatus.SOLD },
+            );
+            if (!biddingSession) return res.status(400).json({ message: 'Bidding session did not exist yet!' });
+            const product = await ProductModel.findById(productId);
+            if (!product) return res.status(400).json({ message: 'Product did not exist yet!' });
+            ProductModel.findByIdAndUpdate(productId, { paid: product.price }).exec();
+            UserModel.findByIdAndUpdate(userId, { $inc: { balance: product.paid - product.price } }).exec();
+            res.status(201).json({ data: 'Pay successfully!' });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message: 'Something went wrong !' });
+        }
     };
 }

@@ -42,7 +42,7 @@ const Transition = forwardRef(function Transition(
 });
 
 const RoomDetail = ({ params }: { params: { roomId: string } }) => {
-    const [bidIncrement, setBidIncrement] = useState<number>(5000000);
+    const [bidIncrement, setBidIncrement] = useState<number>(5000);
     const [currentPrice, setCurrentPrice] = useState<number>(0);
     const [currentBid, setCurrentBid] = useState<number>(0);
     const [timeStart, setTimeStart] = useState<Date | null>(null);

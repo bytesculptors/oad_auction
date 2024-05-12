@@ -4,7 +4,8 @@ enum ProductStatus {
     ACTIVE = 2,
     DENY = 3,
     BIDDING = 4,
-    SOLD = 5,
+    PAYING = 5,
+    SOLD = 6,
 }
 
 export enum AdminAcceptStatus {
@@ -14,7 +15,8 @@ export enum AdminAcceptStatus {
 
 export enum ProductUserStatus {
     APPLIED = 0,
-    WON = 1,
-    LOST = 2,
+    WON_NOT_PAYING = 1,
+    WON_PAID = 2,
+    LOST = 3,
 }
 export default ProductStatus;

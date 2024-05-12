@@ -22,6 +22,7 @@ export const PaymentSchema = new Schema<IPaymentSchema>(
         transId: {
             type: String,
             required: true,
+            unique: true,
         },
         payDate: {
             type: String,

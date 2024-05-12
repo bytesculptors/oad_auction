@@ -8,6 +8,7 @@ export interface IProductSchema extends Document {
     image: string;
     price: number;
     deposit: number;
+    paid: number;
     category: string;
     material: string;
     dimension: string;

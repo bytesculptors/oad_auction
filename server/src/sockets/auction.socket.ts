@@ -13,6 +13,7 @@ import {
 } from '@interfaces/socket.interface';
 import { BiddingSessionModel } from '@models/bases/bidding-session.base';
 import { ProductModel } from '@models/bases/product.base';
+import { UserModel } from '@models/bases/user.base';
 import { Server } from 'socket.io';
 
 const rooms: Map<string, IBiddingRoom> = new Map();
@@ -73,13 +74,17 @@ const onRemoveRoom = (roomId: string): void => {
 
 const updateWinnderBiddingSession = async (roomId: string, price: number, winnerId: string): Promise<any> => {
     try {
+        const room = rooms.get(roomId);
+        if (!room) return;
+        if (!room?.product) return;
         const biddingSession = await BiddingSessionModel.findOneAndUpdate(
             { _id: roomId },
-            { winnerId, status: ProductStatus.SOLD },
+            { winnerId, status: ProductStatus.PAYING },
             { upsert: true },
         );
         if (!biddingSession) return undefined;
-        const product = await ProductModel.findOneAndUpdate({ _id: biddingSession?.product }, { price });
+        UserModel.findOneAndUpdate({ _id: winnerId }, { $inc: { balance: -room.product?.deposit } }).exec();
+        ProductModel.findOneAndUpdate({ _id: biddingSession?.product }, { price, paid: room.product?.deposit }).exec();
         return biddingSession;
     } catch (error) {
         console.log(error);
@@ -139,11 +144,9 @@ export const socketConfig = (io: Server) => {
             if (room.winner) {
                 const winnerResponse: IWinnerResponse = { price: room.price, ...room.winner, time: new Date() };
                 const response = await updateWinnderBiddingSession(roomId, room.price, room.winner.userId);
-                if (response) {
-                    io.to(roomId).emit('winner-announced', winnerResponse);
-                    onRemoveRoom(roomId);
-                    io.to(roomId).socketsLeave(roomId);
-                }
+                io.to(roomId).emit('winner-announced', winnerResponse);
+                onRemoveRoom(roomId);
+                io.to(roomId).socketsLeave(roomId);
             }
         });
 
