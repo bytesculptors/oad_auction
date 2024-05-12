@@ -10,7 +10,7 @@ interface ProductCardProps {
 }
 
 const ProductCard = ({ item }: ProductCardProps) => {
-    const { name, imageUrl, price, category, year, style, origin } = item;
+    const { name, image, price, category, year, style, origin } = item;
     const [isOpen, setIsOpen] = useState(false);
     return (
         <div className="car-card group">
@@ -23,7 +23,7 @@ const ProductCard = ({ item }: ProductCardProps) => {
                 <span className="self-start text-[14px] font-semibold">${price}</span>
             </p>
             <div className="relative w-full h-40 my-3 object-contain">
-                <Image src={imageUrl} alt="product model" fill priority className="object-contain" />
+                <Image src={image} alt="product model" fill priority className="object-contain" />
             </div>
 
             <div className="relative flex w-full mt-2">

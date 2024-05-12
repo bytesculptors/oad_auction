@@ -57,7 +57,7 @@ const ProductDetail = ({ isOpen, closeModal, item }: ProductDetailProps) => {
                                     <div className="flex-1 flex flex-col gap-3">
                                         <div className="relative w-full h-40 bg-pattern bg-cover bg-center">
                                             <Image
-                                                src={item.imageUrl}
+                                                src={item.image}
                                                 alt="product model"
                                                 fill
                                                 priority

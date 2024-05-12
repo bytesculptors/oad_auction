@@ -13,19 +13,18 @@ export default function Home() {
     const [keyWord, setKeyWord] = useState('');
     const [searchResults, setSearchResults] = useState<IProduct[]>([]);
     const isDataEmpty = !Array.isArray(ProductData) || ProductData.length < 1 || !ProductData;
-    const filterProduct = ProductData.filter((item) => {
-        const productName = item.name.toLowerCase();
-        return productName.includes(keyWord.toLowerCase());
-    });
+    // const filterProduct = ProductData.filter((item) => {
+    //     const productName = item.name.toLowerCase();
+    //     return productName.includes(keyWord.toLowerCase());
+    // });
     const stateUser = useSelector((state: RootState) => state.reducerUser);
 
     const handleSearch = async () => {
         try {
             const response = await searchProductsApi(keyWord);
-            console.log(response.data);
             if (response.status === 200) {
+                console.log(response.data);
                 setSearchResults(response.data);
-                console.log(searchResults);
             } else {
                 console.error('Error fetching products:', response.status);
             }
@@ -33,6 +32,9 @@ export default function Home() {
             console.error('Error fetching products:', error);
         }
     };
+    useEffect(() => {
+        console.log('Search results updated:', searchResults);
+    }, [searchResults]);
 
     // useEffect(() => {
     //     if (stateUser._id === '') {
@@ -78,11 +80,11 @@ export default function Home() {
                     </form>
                 </div>
 
-                {/* {!isDataEmpty ? (
+                {!isDataEmpty ? (
                     <section>
                         <div className="home__cars-wrapper">
                             {searchResults.map((item) => (
-                                <ProductCard item={item} />
+                                <ProductCard key={item._id} item={item.product} />
                             ))}
                         </div>
                     </section>
@@ -90,7 +92,7 @@ export default function Home() {
                     <div>
                         <h2 className="text-black text-xl font-bold">Oops, no results!!</h2>
                     </div>
-                )} */}
+                )}
             </div>
         </main>
     );
