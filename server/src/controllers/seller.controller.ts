@@ -1,7 +1,7 @@
 import cloudinary from '@configs/cloudinary.config';
 import ProductStatus from '@constants/status';
 import { Request, Response } from '@customes/auth.type';
-import { ISchemaBiddingSession } from '@interfaces/bidding-session.interface';
+import { IBiddingSessionSchema } from '@interfaces/bidding-session.interface';
 import { IBiddingData, ICreateProduct, IQueryProduct, IUpdateProduct } from '@interfaces/product.interface';
 import { BiddingSessionModel } from '@models/bases/bidding-session.base';
 import { ProductModel } from '@models/bases/product.base';
@@ -93,7 +93,7 @@ export default class SellerController {
                 { upsert: true },
             );
             if (!newProduct) return res.status(400).json({ message: 'Product did not exist yet!' });
-            const biddingUpdate: UpdateQuery<ISchemaBiddingSession> = {};
+            const biddingUpdate: UpdateQuery<IBiddingSessionSchema> = {};
             if (duration) biddingUpdate.duration = duration;
             if (startTime) biddingUpdate.startTime = startTime;
             (duration || startTime) &&

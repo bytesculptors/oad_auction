@@ -1,9 +1,9 @@
 import ProductStatus from '@constants/status';
-import { ISchemaBiddingSession } from '@interfaces/bidding-session.interface';
+import { IBiddingSessionSchema } from '@interfaces/bidding-session.interface';
 import { defaultStartDate } from '@utils/date.util';
 import { Types, Schema } from 'mongoose';
 
-export const BiddingSessionSchema = new Schema<ISchemaBiddingSession>(
+export const BiddingSessionSchema = new Schema<IBiddingSessionSchema>(
     {
         product: {
             type: Types.ObjectId,
