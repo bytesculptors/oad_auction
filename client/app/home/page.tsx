@@ -33,6 +33,9 @@ export default function Home() {
         }
     };
     useEffect(() => {
+        handleSearch();
+    }, [keyWord]);
+    useEffect(() => {
         console.log('Search results updated:', searchResults);
     }, [searchResults]);
 

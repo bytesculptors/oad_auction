@@ -37,7 +37,7 @@ const searchProductsApi = async (keyword: string) => {
     };
 
     await request
-        .get<IResponseGetProducts>(`/v1/user/find-product?page=0`)
+        .get<IResponseGetProducts>(`/v1/user/find-product?keyword=${keyword}&page=0`)
         .then((response) => {
             _response.data = response.data.data;
             _response.status = response.status;
