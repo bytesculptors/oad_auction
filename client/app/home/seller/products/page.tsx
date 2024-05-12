@@ -12,11 +12,32 @@ import { RootState } from '@/redux/Store';
 import { FiRefreshCcw } from 'react-icons/fi';
 import { IProduct } from '@/types/product.type';
 import StickyHeadTable, { Data } from '@/components/table/StickyHeadTable';
+import { requestReviewApi } from '@/api/requestReviewApi';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function SellerProducts() {
     const stateUser = useSelector((state: RootState) => state.reducerUser);
     const [productList, setProductList] = useState<Data[]>([]);
     const [sort, setSort] = useState('');
+
+    const handleRequestReview = async (idProduct: string) => {
+        const response = await requestReviewApi(
+            {
+                sellerId: stateUser._id,
+            },
+            idProduct,
+        );
+        if (response.status === 200) {
+            toast.success('Success', {
+                position: 'top-center',
+            });
+        } else {
+            toast.error(response.message, {
+                position: 'top-center',
+            });
+        }
+    };
 
     const handleChange = (event: SelectChangeEvent) => {
         setSort(event.target.value as string);
@@ -65,6 +86,7 @@ export default function SellerProducts() {
                         style: item.product.style,
                         weight: item.product.weight,
                         year: item.product.year,
+                        startTime: item.startTime,
                     });
                 }
             });
@@ -102,7 +124,14 @@ export default function SellerProducts() {
                 </div>
             </Box>
 
-            <StickyHeadTable rows={productList} />
+            <StickyHeadTable
+                rows={productList}
+                role={stateUser.role}
+                sendToAdmin={async (idProduct: string) => {
+                    await handleRequestReview(idProduct);
+                }}
+            />
+            <ToastContainer />
         </div>
     );
 }

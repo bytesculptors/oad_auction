@@ -28,7 +28,7 @@ export default function AdminManagementProducts() {
         if (response.status === 200) {
             var _productList: Data[] = [];
             response.data.map((item) => {
-                if (item.product) {
+                if (item.product && item.sellerId) {
                     var status = 'null';
                     if (item.status === 0) {
                         status = 'Inactive';
@@ -64,6 +64,7 @@ export default function AdminManagementProducts() {
                         style: item.product.style,
                         weight: item.product.weight,
                         year: item.product.year,
+                        startTime: item.startTime,
                     });
                 }
             });

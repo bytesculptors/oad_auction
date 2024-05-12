@@ -11,9 +11,11 @@ import { CiEdit } from 'react-icons/ci';
 import { Box, Button, Modal, TextField, Typography } from '@mui/material';
 import Image from 'next/image';
 import { useState } from 'react';
+import moment from 'moment';
+import { IoIosSend } from 'react-icons/io';
 
 export interface Column {
-    id: 'id' | 'seller' | 'name' | 'description' | 'price' | 'category' | 'status' | 'action';
+    id: 'id' | 'seller' | 'name' | 'description' | 'price' | 'category' | 'startTime' | 'status' | 'action';
     label: string;
     minWidth?: number;
     align?: 'right';
@@ -41,9 +43,18 @@ export interface Data {
     manufacturer: string;
     year: number;
     origin: string;
+    startTime: string;
 }
 
-export default function StickyHeadTable({ rows, role }: { rows: Data[]; role?: string }) {
+export default function StickyHeadTable({
+    rows,
+    role,
+    sendToAdmin,
+}: {
+    rows: Data[];
+    role: string;
+    sendToAdmin?: (idProduct: string) => void;
+}) {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
@@ -73,6 +84,7 @@ export default function StickyHeadTable({ rows, role }: { rows: Data[]; role?: s
               { id: 'name', label: 'Name', minWidth: 70 },
               { id: 'description', label: 'Description', minWidth: 170 },
               { id: 'price', label: 'Price', minWidth: 50 },
+              { id: 'startTime', label: 'Start time', minWidth: 50 },
               { id: 'category', label: 'Category', minWidth: 50 },
               { id: 'status', label: 'Status', minWidth: 50 },
               { id: 'action', label: 'Action', minWidth: 50 },
@@ -82,6 +94,7 @@ export default function StickyHeadTable({ rows, role }: { rows: Data[]; role?: s
               { id: 'name', label: 'Name', minWidth: 70 },
               { id: 'description', label: 'Description', minWidth: 170 },
               { id: 'price', label: 'Price', minWidth: 50 },
+              { id: 'startTime', label: 'Start time', minWidth: 50 },
               { id: 'category', label: 'Category', minWidth: 50 },
               { id: 'status', label: 'Status', minWidth: 50 },
               { id: 'action', label: 'Action', minWidth: 50 },
@@ -110,14 +123,28 @@ export default function StickyHeadTable({ rows, role }: { rows: Data[]; role?: s
                                             return (
                                                 <TableCell key={column.id} align={column.align}>
                                                     {value === 'edit' ? (
-                                                        <CiEdit
-                                                            onClick={() => {
-                                                                handleOpen(row);
-                                                            }}
-                                                            className="text-2xl text-black cursor-pointer"
-                                                        />
+                                                        <div className="flex flex-row justify-center items-center gap-2">
+                                                            <CiEdit
+                                                                onClick={() => {
+                                                                    handleOpen(row);
+                                                                }}
+                                                                className="text-2xl text-black cursor-pointer"
+                                                            />
+                                                            {role === 'seller' && row['status'] === 'Inactive' && (
+                                                                <IoIosSend
+                                                                    className="text-2xl text-black cursor-pointer"
+                                                                    onClick={() => {
+                                                                        if (sendToAdmin) {
+                                                                            sendToAdmin(row['id']);
+                                                                        }
+                                                                    }}
+                                                                />
+                                                            )}
+                                                        </div>
                                                     ) : column.format && typeof value === 'number' ? (
                                                         column.format(value)
+                                                    ) : column.id === 'startTime' ? (
+                                                        moment(value).format('LLLL')
                                                     ) : (
                                                         value
                                                     )}

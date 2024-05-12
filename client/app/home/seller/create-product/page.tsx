@@ -75,7 +75,6 @@ export default function createProduct() {
         data.append('sellerId', stateUser._id);
         console.log(data.get('startTime'));
         if (valueDate) {
-            // data.append('startTime', valueDate?.toISOString());
             console.log(valueDate.toISOString());
         }
 
