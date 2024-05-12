@@ -7,13 +7,15 @@ import ProductDetail from './ProductDetail';
 
 interface ProductCardProps {
     item: ProductProps;
+    buttonTitle?: string;
+    onhandleButton2?: () => void;
 }
 
-const ProductCard = ({ item }: ProductCardProps) => {
+const ProductCard = ({ item, buttonTitle, onhandleButton2 }: ProductCardProps) => {
     const { name, image, price, category, year, style, origin } = item;
     const [isOpen, setIsOpen] = useState(false);
     return (
-        <div className="car-card group">
+        <div className="car-card group w-48 lg:w-96">
             <div className="car-card__content">
                 <h2 className="car-card__content-title">
                     {name} {origin}
