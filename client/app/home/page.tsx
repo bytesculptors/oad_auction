@@ -5,16 +5,36 @@ import ProductData from '@/data/ProductData';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/Store';
+import { searchProductsApi } from '@/api/searchApi';
+import IProduct from '@/api/searchApi';
 import { redirect } from 'next/navigation';
 
 export default function Home() {
-    const [product, setProduct] = useState('');
+    const [keyWord, setKeyWord] = useState('');
+    const [searchResults, setSearchResults] = useState<IProduct[]>([]);
     const isDataEmpty = !Array.isArray(ProductData) || ProductData.length < 1 || !ProductData;
-    const filterProduct = ProductData.filter((item) => {
-        const productName = item.name.toLowerCase();
-        return productName.includes(product.toLowerCase());
-    });
+    // const filterProduct = ProductData.filter((item) => {
+    //     const productName = item.name.toLowerCase();
+    //     return productName.includes(keyWord.toLowerCase());
+    // });
     const stateUser = useSelector((state: RootState) => state.reducerUser);
+
+    const handleSearch = async () => {
+        try {
+            const response = await searchProductsApi(keyWord);
+            if (response.status === 200) {
+                console.log(response.data);
+                setSearchResults(response.data);
+            } else {
+                console.error('Error fetching products:', response.status);
+            }
+        } catch (error) {
+            console.error('Error fetching products:', error);
+        }
+    };
+    useEffect(() => {
+        console.log('Search results updated:', searchResults);
+    }, [searchResults]);
 
     // useEffect(() => {
     //     if (stateUser._id === '') {
@@ -40,12 +60,19 @@ export default function Home() {
                     {/* <SearchBar /> */}
                     <form className="searchbar">
                         <div className="searchbar__item">
-                            <Image src="/car-logo.svg" width={20} height={20} className="ml-4" alt="Car Logo" />
+                            <Image
+                                src="/icon-search.svg"
+                                onClick={handleSearch}
+                                width={20}
+                                height={20}
+                                className="ml-4"
+                                alt="Car Logo"
+                            />
                             <input
                                 type="text"
                                 name="model"
-                                value={product}
-                                onChange={(e) => setProduct(e.target.value)}
+                                value={keyWord}
+                                onChange={(e) => setKeyWord(e.target.value)}
                                 placeholder="Searching..."
                                 className="searchbar__input"
                             />
@@ -56,11 +83,8 @@ export default function Home() {
                 {!isDataEmpty ? (
                     <section>
                         <div className="home__cars-wrapper">
-                            {/* {ProductData.map((item) => (
-                                <ProductCard item={item} />
-                            ))} */}
-                            {filterProduct.map((item) => (
-                                <ProductCard item={item} />
+                            {searchResults.map((item) => (
+                                <ProductCard key={item._id} item={item.product} />
                             ))}
                         </div>
                     </section>

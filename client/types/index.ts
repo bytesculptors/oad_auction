@@ -37,4 +37,5 @@ export interface ProductProps {
     manufacturer: string;
     year: number;
     origin: string;
+    deposit: number;
 }
