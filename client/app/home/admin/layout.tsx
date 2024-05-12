@@ -13,7 +13,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             { title: 'Dashboard', address: '/home//admin', Icon: SiGoogleanalytics },
             { title: 'Users', address: '/home/admin/account-management', Icon: MdManageAccounts },
             { title: 'Products', address: '/home/admin/product-management', Icon: FaProductHunt },
-            { title: 'Approve', address: '/admin/approve', Icon: TiTick },
+            { title: 'Approve', address: '/home/admin/approve', Icon: TiTick },
             { title: 'Account', address: '/home/admin/account', Icon: MdAccountCircle },
         ],
     };

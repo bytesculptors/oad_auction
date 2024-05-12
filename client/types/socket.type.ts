@@ -1,4 +1,5 @@
 import { Socket } from 'socket.io-client';
+import { ICommentItem, IProductItem } from './bid.type';
 
 export interface ISocketState {
     socket: Socket;
@@ -26,6 +27,7 @@ export interface IResponseJoinRoom {
     user: IClientUser;
     startTime: Date;
     duration: number;
+    product?: IProductItem;
 }
 
 export interface IBiddingRoom {
@@ -42,8 +44,16 @@ export interface IPlaceBid extends IJoinRoom {
 
 export interface IPlaceBidResponse extends IClientUser {
     price: number;
+    time: Date;
 }
 
-export interface IWinnderResponse extends IPlaceBidResponse {}
+export interface IWinnerResponse extends IPlaceBidResponse {}
+export interface INewComment extends IJoinRoom {
+    message: string;
+    avatar: string;
+}
 
 export type IUserJoinedCallBack = (response: IResponseJoinRoom) => void;
+export type IBidSuccessCallBack = (response: IPlaceBidResponse) => void;
+export type IWinnerAnnouncedCallBack = (response: IWinnerResponse) => void;
+export type ICommentCallBack = (response: ICommentItem) => void;

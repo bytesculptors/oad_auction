@@ -1,3 +1,4 @@
+import cloudinary from '@configs/cloudinary.config';
 import ProductStatus from '@constants/status';
 import { Request, Response } from '@customes/auth.type';
 import { ISchemaBiddingSession } from '@interfaces/bidding-session.interface';
@@ -9,6 +10,7 @@ import { biddingSelects } from '@references/selects/bidding.select';
 import { isValidStatus } from '@utils/validate.util';
 import { UpdateQuery } from 'mongoose';
 import { BiddingRefOptions } from 'src/references/populate-opts/bidding.ref';
+import * as streamifer from 'streamifier';
 export default class SellerController {
     /**
      *
@@ -17,42 +19,50 @@ export default class SellerController {
      * @returns product data
      */
     static createProduct = async (req: Request, res: Response) => {
+        if (!req?.files?.image) return res.status(400).json({ message: 'Image is required!' });
+        const files = req?.files as any;
         try {
-            const { duration, startTime, sellerId, ...data } = <ICreateProduct>req.body;
-            if (
-                !data.description ||
-                !duration ||
-                !data.image ||
-                !data.name ||
-                !data.price ||
-                !sellerId ||
-                !data.deposit
-            )
-                return res.status(400).json({ message: 'All fields are required...' });
-            const seller = await UserModel.findById(sellerId);
-            if (!seller) return res.status(400).json({ message: 'Seller did not exist yet!' });
-            const newProduct = await ProductModel.create({
-                sellerId,
-                ...data,
-            });
-            let newBiddingSession = new BiddingSessionModel({
-                product: newProduct._id.toString(),
-                duration: duration,
-                sellerId: sellerId,
-            });
-            if (startTime) newBiddingSession.startTime = startTime;
-            newBiddingSession = await newBiddingSession.save();
-            const payload: IBiddingData = {
-                _id: newBiddingSession._id.toString(),
-                duration: newBiddingSession.duration,
-                status: newBiddingSession.status,
-                startTime: newBiddingSession.startTime,
-                product: {
-                    _id: newProduct._id.toString(),
-                    ...data,
+            const uploadStream = cloudinary.uploader.upload_chunked_stream(
+                {
+                    resource_type: 'image',
+                    folder: 'OOAD/images',
+                    chunk_size: 50 * 1024 * 1024,
                 },
-            };
-            res.status(201).json({ data: payload });
+                async (error, result) => {
+                    if (error) return res.status(500).json({ message: 'Something went wrong !' });
+                    if (!result) return res.status(500).json({ message: 'Something went wrong !' });
+                    const { duration, startTime, sellerId, ...data } = <ICreateProduct>req.body;
+                    if (!data.description || !duration || !data.name || !data.price || !sellerId || !data.deposit)
+                        return res.status(400).json({ message: 'All fields are required...' });
+                    const seller = await UserModel.findById(sellerId);
+                    if (!seller) return res.status(400).json({ message: 'Seller did not exist yet!' });
+                    const newProduct = await ProductModel.create({
+                        sellerId,
+                        ...data,
+                        image: result.secure_url,
+                    });
+                    let newBiddingSession = new BiddingSessionModel({
+                        product: newProduct._id.toString(),
+                        duration: duration,
+                        sellerId: sellerId,
+                    });
+                    if (startTime) newBiddingSession.startTime = startTime;
+                    newBiddingSession = await newBiddingSession.save();
+                    const payload: IBiddingData = {
+                        _id: newBiddingSession._id.toString(),
+                        duration: newBiddingSession.duration,
+                        status: newBiddingSession.status,
+                        startTime: newBiddingSession.startTime,
+                        product: {
+                            _id: newProduct._id.toString(),
+                            ...data,
+                            image: result.secure_url,
+                        },
+                    };
+                    res.status(201).json({ data: payload });
+                },
+            );
+            streamifer.createReadStream(files?.image?.data as unknown as Buffer).pipe(uploadStream);
         } catch (error) {
             console.log(error);
             res.status(500).json({ message: 'Something went wrong !' });
@@ -105,7 +115,7 @@ export default class SellerController {
 
     static getProducts = async (req: Request, res: Response) => {
         const { status: stringStatus } = <IQueryProduct>(<unknown>req.query);
-        const { sellerId } = <{ sellerId: string }>req.body;
+        const { sellerId } = <{ sellerId: string }>req.params;
         if (!sellerId) return res.status(400).json({ message: 'SellerId is required!' });
         const status = parseInt(stringStatus);
         if (!isNaN(status) && !isValidStatus(status)) return res.status(400).json({ message: 'status is invalid' });
@@ -126,6 +136,28 @@ export default class SellerController {
         } catch (error) {
             console.log(error);
             res.status(500).json({ message: 'Something went wrong !' });
+        }
+    };
+
+    static uploadImage = async (req: Request, res: Response) => {
+        const files = req?.files as any;
+        if (!req?.files?.image) return res.status(400).json({ message: 'Image is required!' });
+        try {
+            const uploadStream = cloudinary.uploader.upload_chunked_stream(
+                {
+                    resource_type: 'image',
+                    folder: 'OOAD/images',
+                    chunk_size: 50 * 1024 * 1024,
+                },
+                (error, result) => {
+                    console.log(result, error);
+                },
+            );
+            const response = streamifer.createReadStream(files?.image?.data as unknown as Buffer).pipe(uploadStream);
+            return res.status(200).json({ message: 'Upload image successfully !' });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ message: 'Upload image failed !' });
         }
     };
 }

@@ -52,9 +52,10 @@ const ProductCard = ({ item, buttonTitle, onhandleButton2 }: ProductCardProps) =
                         handleClick={() => setIsOpen(true)}
                     />
                     <CustomButton
-                        title="Apply for auction"
+                        title={buttonTitle ? buttonTitle : 'Apply for auction'}
                         containerStyles="w-full py-[16px] rounded-full border border-solid"
                         textStyles="text-black text-[14px] leading-[17px] font-bold"
+                        handleClick={onhandleButton2}
                     />
                 </div>
             </div>

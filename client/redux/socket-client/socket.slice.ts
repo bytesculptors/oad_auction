@@ -1,8 +1,17 @@
-import { IJoinRoom, ISocketState, IUserJoinedCallBack } from '@/types/socket.type';
+import {
+    IBidSuccessCallBack,
+    ICommentCallBack,
+    IJoinRoom,
+    INewComment,
+    IPlaceBid,
+    ISocketState,
+    IUserJoinedCallBack,
+    IWinnerAnnouncedCallBack,
+} from '@/types/socket.type';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { off } from 'process';
 import { Socket, io } from 'socket.io-client';
-const baseUrl: string = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+const baseUrl: string = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000';
 const socket: Socket = io(baseUrl, {
     autoConnect: false,
 });
@@ -39,6 +48,33 @@ export const SocketSlice = createSlice({
         },
         offUserJoined: (state) => {
             state.socket.off('user-joined');
+        },
+        onPlaceBid: (state, action: PayloadAction<IPlaceBid>) => {
+            state.socket.emit('place-bid', action.payload);
+        },
+        onBidSuccess: (state, action: PayloadAction<IBidSuccessCallBack>) => {
+            state.socket.on('bid-success', action.payload);
+        },
+        offBidSuccess: (state) => {
+            state.socket.off('bid-success');
+        },
+        onWinnerAnnounce: (state, action: PayloadAction<string>) => {
+            state.socket.emit('winner-announce', action.payload);
+        },
+        onWinnerAnnounced: (state, action: PayloadAction<IWinnerAnnouncedCallBack>) => {
+            state.socket.on('winner-announced', action.payload);
+        },
+        offWinnerAnnounced: (state) => {
+            state.socket.off('winner-announced');
+        },
+        onNewComment: (state, action: PayloadAction<INewComment>) => {
+            state.socket.emit('new-comment', action.payload);
+        },
+        onNewCommentReceived: (state, action: PayloadAction<ICommentCallBack>) => {
+            state.socket.on('new-commented', action.payload);
+        },
+        offNewCommentReceived: (state) => {
+            state.socket.off('new-commented');
         },
     },
 });

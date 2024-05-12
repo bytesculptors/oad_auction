@@ -86,11 +86,11 @@ const ProductDetail = ({ isOpen, closeModal, item }: ProductDetailProps) => {
                                                 }
                                             })}
                                         </div>
-                                        <CustomButton
+                                        {/* <CustomButton
                                             title="Apply for auction"
                                             containerStyles="w-full mt-6 py-[16px] rounded-full bg-primary-blue"
                                             textStyles="text-white text-[14px] leading-[17px] font-bold"
-                                        />
+                                        /> */}
                                     </div>
                                 </Dialog.Panel>
                             </Transition.Child>

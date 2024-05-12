@@ -10,12 +10,13 @@ import { route } from '@routes/index';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { socketConfig } from './sockets/auction.socket';
+import fileUpload from 'express-fileupload';
 dotenv.config();
 
 const app: Express = express();
 app.use(
     cors({
-        origin: '*',
+        origin: 'http://localhost:3000',
         methods: ['GET', 'PUT', 'PATCH', 'POST', 'DELETE'],
     }),
 );
@@ -29,6 +30,11 @@ app.use(
 );
 app.use(morgan('common'));
 app.use(cookieParser());
+app.use(
+    fileUpload({
+        limits: { fileSize: 50 * 1024 * 1024 },
+    }),
+);
 route(app);
 app.get('/', (req: Request, res: Response) => {
     res.status(200).json('Hello everyone, this is auction app');
@@ -36,7 +42,7 @@ app.get('/', (req: Request, res: Response) => {
 const server = createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: '*',
+        origin: 'http://localhost:3000',
     },
 });
 socketConfig(io);

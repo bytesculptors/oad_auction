@@ -4,9 +4,9 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 export interface UserState extends IUser {}
 
 const initialState: UserState = {
-    _id: '1',
+    _id: '',
     email: '',
-    name: 'andrew',
+    name: '',
     role: '',
     balance: 0,
 };

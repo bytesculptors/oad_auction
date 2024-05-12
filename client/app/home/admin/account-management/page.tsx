@@ -39,7 +39,6 @@ interface Data {
     role: string;
     email: string;
     balance: number;
-
     action: string;
 }
 
@@ -77,7 +76,7 @@ const style = {
     p: 4,
 };
 
-export default function StickyHeadTable() {
+export default function AccountManagement() {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [open, setOpen] = React.useState(false);

@@ -1,11 +1,15 @@
+import ProductStatus from '@constants/status';
+import { IProductItem } from '@interfaces/product.interface';
 import {
     IBiddingRoom,
+    ICommentItem,
     IJoinRoom,
+    INewComment,
     IOnlineUser,
     IPlaceBid,
     IPlaceBidResponse,
     IResponseJoinRoom,
-    IWinnderResponse,
+    IWinnerResponse,
 } from '@interfaces/socket.interface';
 import { BiddingSessionModel } from '@models/bases/bidding-session.base';
 import { ProductModel } from '@models/bases/product.base';
@@ -32,6 +36,7 @@ const onAddingOnlineUser = async (roomId: string, user: IOnlineUser): Promise<IR
                     users: [user],
                     startTime: biddingSession?.startTime as Date,
                     duration: biddingSession?.duration as number,
+                    product: product as IProductItem,
                 });
             }
         } catch (error) {
@@ -49,6 +54,7 @@ const onAddingOnlineUser = async (roomId: string, user: IOnlineUser): Promise<IR
         user,
         duration: rooms.get(roomId)?.duration || 50,
         startTime: rooms.get(roomId)?.startTime || new Date(),
+        product: rooms.get(roomId)?.product,
     };
 };
 
@@ -59,6 +65,26 @@ const onRemoveOnlineUser = (roomId: string, user: IOnlineUser): void => {
     if (userExistIndex(room, user) < 0) return;
     room.users.splice(userExistIndex(room, user), 1);
     rooms.set(roomId, { ...room, users: room.users });
+};
+
+const onRemoveRoom = (roomId: string): void => {
+    if (rooms.has(roomId)) rooms.delete(roomId);
+};
+
+const updateWinnderBiddingSession = async (roomId: string, price: number, winnerId: string): Promise<any> => {
+    try {
+        const biddingSession = await BiddingSessionModel.findOneAndUpdate(
+            { _id: roomId },
+            { winnerId, status: ProductStatus.SOLD },
+            { upsert: true },
+        );
+        if (!biddingSession) return undefined;
+        const product = await ProductModel.findOneAndUpdate({ _id: biddingSession?.product }, { price });
+        return biddingSession;
+    } catch (error) {
+        console.log(error);
+        return undefined;
+    }
 };
 
 export const socketConfig = (io: Server) => {
@@ -84,18 +110,40 @@ export const socketConfig = (io: Server) => {
             const room = rooms.get(roomId);
             if (!room) return;
             if (amount <= room.price) return;
-            if (room.startTime.getTime() + room.duration * 1000 < Date.now()) return;
+            if (
+                room.startTime.getTime() + room.duration * 60 * 1000 < new Date().getTime() ||
+                room.startTime.getTime() > new Date().getTime()
+            )
+                return;
             rooms.set(roomId, { ...room, winner: user, price: amount });
-            const response: IPlaceBidResponse = { price: amount, ...user };
-            socket.to(roomId).emit('bid-success', response);
+            const response: IPlaceBidResponse = { price: amount, ...user, time: new Date() };
+            io.to(roomId).emit('bid-success', response);
         });
 
-        socket.on('winnder-announce', (roomId: string) => {
+        socket.on('new-comment', (data: INewComment) => {
+            const response: ICommentItem = {
+                content: data.message,
+                time: new Date(),
+                user: {
+                    id: data.user.userId,
+                    name: data.user.name,
+                    avatar: data.avatar,
+                },
+            };
+            io.to(data.roomId).emit('new-commented', response);
+        });
+
+        socket.on('winner-announce', async (roomId: string) => {
             const room = rooms.get(roomId);
             if (!room) return;
             if (room.winner) {
-                const winnderResponse: IWinnderResponse = { price: room.price, ...room.winner };
-                socket.to(roomId).emit('winner-announced', winnderResponse);
+                const winnerResponse: IWinnerResponse = { price: room.price, ...room.winner, time: new Date() };
+                const response = await updateWinnderBiddingSession(roomId, room.price, room.winner.userId);
+                if (response) {
+                    io.to(roomId).emit('winner-announced', winnerResponse);
+                    onRemoveRoom(roomId);
+                    io.to(roomId).socketsLeave(roomId);
+                }
             }
         });
 
