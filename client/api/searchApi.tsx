@@ -37,7 +37,7 @@ const getProductForUserApi = async () => {
     };
 
     await request
-        .get<IResponseGetProducts>(`/v1/user/get-products?status=0`)
+        .get<IResponseGetProducts>(`/v1/user/find-product/66350d9386518be9e6cd4636?status=0`)
         .then((response) => {
             _response.data = response.data.data;
             _response.status = response.status;
