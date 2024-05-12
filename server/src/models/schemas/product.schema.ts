@@ -1,7 +1,7 @@
-import { ISchemaProduct } from '@interfaces/product.interface';
+import { IProductSchema } from '@interfaces/product.interface';
 import { Schema, Types } from 'mongoose';
 
-export const ProductSchema = new Schema<ISchemaProduct>(
+export const ProductSchema = new Schema<IProductSchema>(
     {
         sellerId: {
             type: Types.ObjectId,

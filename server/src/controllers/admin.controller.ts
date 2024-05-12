@@ -35,7 +35,7 @@ export default class AdminController {
             )
                 .select(biddingSelects)
                 .populate(BiddingRefOptions())
-                .populate(UserRefOptions());
+                .populate(UserRefOptions('sellerId'));
             res.status(200).json({ data: biddingSessions });
         } catch (error) {
             console.log(error);

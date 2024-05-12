@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongoose';
 import { Document } from 'mongoose';
 
-export interface ISchemaProduct extends Document {
+export interface IProductSchema extends Document {
     sellerId: ObjectId;
     name: string;
     description: string;
