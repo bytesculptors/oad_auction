@@ -8,8 +8,14 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import dayjs, { Dayjs } from 'dayjs';
 
 export default function createProduct() {
+    const [valueDate, setValueDate] = useState<Dayjs | null>();
     const [name, setName] = useState('');
     const [price, setPrice] = useState('');
     const [deposit, setDeposit] = useState('');
@@ -67,6 +73,12 @@ export default function createProduct() {
         const data = new FormData(event.currentTarget);
         console.log(data.get('image'));
         data.append('sellerId', stateUser._id);
+        console.log(data.get('startTime'));
+        if (valueDate) {
+            // data.append('startTime', valueDate?.toISOString());
+            console.log(valueDate.toISOString());
+        }
+
         const response = await createProductApi(data);
         if (response.status === 201) {
             toast.success('Create success', {
@@ -144,7 +156,17 @@ export default function createProduct() {
                                 setDuration(e.target.value);
                             }}
                         />
-
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DemoContainer components={['DateTimePicker']}>
+                                <DateTimePicker
+                                    name="startTime"
+                                    label="startTime"
+                                    value={valueDate}
+                                    ampm={false}
+                                    onChange={(newValue) => setValueDate(newValue)}
+                                />
+                            </DemoContainer>
+                        </LocalizationProvider>
                         <InputItem
                             title="Dimension"
                             onChangeContent={(e) => {

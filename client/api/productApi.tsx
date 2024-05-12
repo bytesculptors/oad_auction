@@ -161,7 +161,7 @@ interface IResponseAdminGetProduct {
 const adminGetProduct = async (status?: number) => {
     var _response: IResponseAdminGetProduct = {
         data: [],
-        status: 0,
+        status: -1,
         messeage: '',
     };
 

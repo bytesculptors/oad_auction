@@ -36,7 +36,7 @@ const Approve = () => {
         }
     };
     const handleResetApi = async () => {
-        const response = await adminGetProduct(0);
+        const response = await adminGetProduct(1);
         if (response.status === 200) {
             var _productsApprove: IProductWithSeller[] = [];
             response.data.map((item) => {
