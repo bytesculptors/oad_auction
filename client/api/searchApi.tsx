@@ -30,6 +30,28 @@ interface IResponseGetProducts {
     status: number;
 }
 
+const getProductForUserApi = async () => {
+    const _response: IResponseGetProducts = {
+        data: [],
+        status: 0,
+    };
+
+    await request
+        .get<IResponseGetProducts>(`/v1/user/get-products?status=0`)
+        .then((response) => {
+            _response.data = response.data.data;
+            _response.status = response.status;
+        })
+        .catch((error) => {
+            if (error.response) {
+                _response.data = error.response.data;
+                _response.status = error.response.status;
+            }
+        });
+    console.log(_response);
+    return _response;
+};
+
 const searchProductsApi = async (keyword: string) => {
     const _response: IResponseGetProducts = {
         data: [],
@@ -51,4 +73,4 @@ const searchProductsApi = async (keyword: string) => {
     console.log(_response);
     return _response;
 };
-export { searchProductsApi };
+export { searchProductsApi, getProductForUserApi };
