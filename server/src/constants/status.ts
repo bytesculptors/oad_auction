@@ -11,4 +11,10 @@ export enum AdminAcceptStatus {
     ACTIVE = 2,
     DENY = 3,
 }
+
+export enum ProductUserStatus {
+    APPLIED = 0,
+    WON = 1,
+    LOST = 2,
+}
 export default ProductStatus;

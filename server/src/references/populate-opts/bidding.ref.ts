@@ -1,8 +1,9 @@
+import { orderSelects } from '@references/selects/order.select';
 import { productSelects } from '@references/selects/product.select';
 import { userSlects } from '@references/selects/user.select';
 import { PopulateOptions, PopulateOption } from 'mongoose';
 
-export const BiddingRefOptions = (match?: any, isPopulated: boolean = false): PopulateOptions => {
+export const BiddingRefOptions = (match?: any): PopulateOptions => {
     const populatedOptions: PopulateOptions = {
         path: 'product',
         model: 'Product',
@@ -12,11 +13,20 @@ export const BiddingRefOptions = (match?: any, isPopulated: boolean = false): Po
     return populatedOptions;
 };
 
-export const UserRefOptions = (): PopulateOptions => {
+export const UserRefOptions = (path: string): PopulateOptions => {
     const populatedOptions: PopulateOptions = {
-        path: 'sellerId',
+        path: path,
         model: 'User',
         select: userSlects,
+    };
+    return populatedOptions;
+};
+
+export const PaymentRefOptios = (): PopulateOptions => {
+    const populatedOptions: PopulateOptions = {
+        path: 'order',
+        model: 'Order',
+        select: orderSelects,
     };
     return populatedOptions;
 };
