@@ -28,6 +28,11 @@ export const ProductSchema = new Schema<IProductSchema>(
             type: Number,
             required: true,
         },
+        paid: {
+            type: Number,
+            required: true,
+            default: 0,
+        },
         material: {
             type: String,
             required: true,

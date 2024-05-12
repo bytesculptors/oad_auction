@@ -130,7 +130,14 @@ export class UserController {
                 bidders: { $in: [userId] },
             };
             if (!isNaN(status) && status === ProductUserStatus.APPLIED) filter.winnerId = { $exists: false };
-            if (!isNaN(status) && status === ProductUserStatus.WON) filter.winnerId = userId;
+            if (!isNaN(status) && status === ProductUserStatus.WON_NOT_PAYING) {
+                filter.winnerId = userId;
+                filter.status = ProductStatus.PAYING;
+            }
+            if (!isNaN(status) && status === ProductUserStatus.WON_PAID) {
+                filter.winnerId = userId;
+                filter.status = ProductStatus.SOLD;
+            }
             if (!isNaN(status) && status === ProductUserStatus.LOST)
                 filter.$and = [{ winnerId: { $ne: userId } }, { winnerId: { $exists: true } }];
             const biddingSessions = await BiddingSessionModel.find(filter)

@@ -28,6 +28,10 @@ export interface IPaymentResultResponse {
     };
 }
 
+export interface IPaymentResultResponseRaw {
+    data: IPaymentResultResponse;
+}
+
 export enum PaymentStatus {
     SUCCESS = '00',
 }
