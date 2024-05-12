@@ -1,5 +1,5 @@
 'use client';
-import { createProductApi } from '@/api/productApi';
+import { createProductApi, ICreateProduct } from '@/api/productApi';
 import InputItem from '@/components/InputItem';
 import { RootState } from '@/redux/Store';
 import { Box } from '@mui/material';
@@ -65,6 +65,18 @@ export default function createProduct() {
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
+        console.log(data.get('image'));
+        data.append('sellerId', stateUser._id);
+        const response = await createProductApi(data);
+        if (response.status === 201) {
+            toast.success('Create success', {
+                position: 'top-center',
+            });
+        } else {
+            toast.error(response.data.message, {
+                position: 'top-center',
+            });
+        }
     };
 
     return (
@@ -106,7 +118,7 @@ export default function createProduct() {
                                 id="image"
                                 name="image"
                                 type="file"
-                                accept="image/png, image/gif, image/jpeg"
+                                accept="image/png, image/gif, image/jpeg, image/webp"
                                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                                 placeholder="Description"
                             ></input>

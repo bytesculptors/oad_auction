@@ -1,7 +1,7 @@
 import request from '@/lib/axios';
 import { IProduct } from '@/types/product.type';
 
-interface ICreateProduct {
+export interface ICreateProduct {
     sellerId: string;
     name: string;
     price: number;
@@ -51,7 +51,7 @@ interface IResponseCreateProduct {
     status: number;
 }
 
-const createProductApi = async (data: ICreateProduct) => {
+const createProductApi = async (data: any) => {
     var _response: IResponseCreateProduct = {
         data: {
             _id: '',
@@ -83,9 +83,9 @@ const createProductApi = async (data: ICreateProduct) => {
     console.log(data);
 
     await request
-        .post<IResponseCreateProduct>('/v1/seller/create-product', JSON.stringify(data), {
+        .post<IResponseCreateProduct>('/v1/seller/create-product', data, {
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'multipart/form-data',
             },
         })
         .then((response) => {

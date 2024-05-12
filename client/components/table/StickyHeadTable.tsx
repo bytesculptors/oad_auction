@@ -10,6 +10,7 @@ import TableRow from '@mui/material/TableRow';
 import { CiEdit } from 'react-icons/ci';
 import { Box, Button, Modal, TextField, Typography } from '@mui/material';
 import Image from 'next/image';
+import { useState } from 'react';
 
 export interface Column {
     id: 'id' | 'seller' | 'name' | 'description' | 'price' | 'category' | 'status' | 'action';
@@ -166,6 +167,7 @@ const BasicModal = ({
     data?: Data;
     role?: string;
 }) => {
+    const [file, setFile] = useState<File | undefined>();
     return (
         <div>
             <Modal
@@ -195,7 +197,7 @@ const BasicModal = ({
                             >
                                 <TextField id="name" label="Name" variant="outlined" value={data?.name} />
                                 <Image
-                                    src={data?.image || 'null'}
+                                    src={file ? URL.createObjectURL(file) : data?.image || 'null'}
                                     alt="product model"
                                     width={500}
                                     height={500}
@@ -203,12 +205,12 @@ const BasicModal = ({
                                 />
                                 <input
                                     onChange={(event) => {
-                                        // setFile(event.target.files?.[0]);
+                                        setFile(event.target.files?.[0]);
                                     }}
                                     id="image"
                                     name="image"
                                     type="file"
-                                    accept="image/png, image/gif, image/jpeg"
+                                    accept="image/png, image/gif, image/jpeg, image/webp"
                                     className="py-8 appearance-none rounded-none relative block w-full px-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                                     placeholder="Description"
                                 ></input>

@@ -24,12 +24,12 @@ export interface CustomFilterProps {
 
 export interface ProductProps {
     name: string;
-    imageUrl: any;
+    image: any;
     description: string;
     price: number;
     category: string;
     material: string;
-    dimensions: string;
+    dimension: string;
     color: string;
     weight: number;
     condition: string;

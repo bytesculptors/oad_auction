@@ -8,13 +8,14 @@ import ProductDetail from './ProductDetail';
 interface ProductCardProps {
     item: ProductProps;
     buttonTitle?: string;
+    onhandleButton2?: () => void;
 }
 
-const ProductCard = ({ item, buttonTitle }: ProductCardProps) => {
-    const { name, imageUrl, price, category, year, style, origin } = item;
+const ProductCard = ({ item, buttonTitle, onhandleButton2 }: ProductCardProps) => {
+    const { name, image, price, category, year, style, origin } = item;
     const [isOpen, setIsOpen] = useState(false);
     return (
-        <div className="car-card group">
+        <div className="car-card group w-48 lg:w-96">
             <div className="car-card__content">
                 <h2 className="car-card__content-title">
                     {name} {origin}
@@ -24,7 +25,7 @@ const ProductCard = ({ item, buttonTitle }: ProductCardProps) => {
                 <span className="self-start text-[14px] font-semibold">${price}</span>
             </p>
             <div className="relative w-full h-40 my-3 object-contain">
-                <Image src={imageUrl} alt="product model" fill priority className="object-contain" />
+                <Image src={image} alt="product model" fill priority className="object-contain" />
             </div>
 
             <div className="relative flex w-full mt-2">
@@ -54,6 +55,7 @@ const ProductCard = ({ item, buttonTitle }: ProductCardProps) => {
                         title={buttonTitle ? buttonTitle : 'Apply for auction'}
                         containerStyles="w-full py-[16px] rounded-full border border-solid"
                         textStyles="text-black text-[14px] leading-[17px] font-bold"
+                        handleClick={onhandleButton2}
                     />
                 </div>
             </div>

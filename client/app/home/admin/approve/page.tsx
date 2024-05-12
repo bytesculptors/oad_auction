@@ -1,4 +1,5 @@
 'use client';
+import { approveProduct } from '@/api/approveApi';
 import { adminGetProduct } from '@/api/productApi';
 import { ProductCard } from '@/components';
 import ProductData from '@/data/ProductData';
@@ -7,10 +8,33 @@ import { IProductWithSeller } from '@/types/product.type';
 import { Paper, TextField, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { FiRefreshCcw } from 'react-icons/fi';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Approve = () => {
     // const [product, setProduct] = useState('');
     const [productsApprove, setProductsApprove] = useState<IProductWithSeller[]>();
+    const handleAprove = async (_id: string, sellerId: string, productId: string) => {
+        const response = await approveProduct(
+            {
+                _id: _id,
+                sellerId: sellerId,
+                productId: productId,
+            },
+            2,
+        );
+
+        if (response.status === 200) {
+            handleResetApi();
+            toast.success(response.message, {
+                position: 'top-center',
+            });
+        } else {
+            toast.error(response.message, {
+                position: 'top-center',
+            });
+        }
+    };
     const handleResetApi = async () => {
         const response = await adminGetProduct(0);
         if (response.status === 200) {
@@ -18,13 +42,17 @@ const Approve = () => {
             response.data.map((item) => {
                 if (item.product) {
                     _productsApprove.push({
+                        _id: item._id,
+                        duration: item.duration,
+                        startTime: item.startTime,
+                        status: item.status,
                         product: {
                             category: item.product.category,
                             color: item.product.color,
                             condition: item.product.condition,
                             description: item.product.description,
-                            dimensions: item.product.dimension,
-                            imageUrl: item.product.image,
+                            dimension: item.product.dimension,
+                            image: item.product.image,
                             manufacturer: item.product.manufacturer,
                             material: item.product.material,
                             name: item.product.name,
@@ -33,6 +61,8 @@ const Approve = () => {
                             style: item.product.style,
                             weight: item.product.weight,
                             year: item.product.year,
+                            _id: item.product._id,
+                            deposit: item.product.deposit,
                         },
                         sellerId: {
                             _id: item.sellerId._id,
@@ -80,11 +110,18 @@ const Approve = () => {
                                         Seller : {product.sellerId.name}
                                     </Typography>
                                 </div>
-                                <ProductCard item={product.product} buttonTitle="Approve" />
+                                <ProductCard
+                                    item={product.product}
+                                    buttonTitle="Approve"
+                                    onhandleButton2={async () => {
+                                        await handleAprove(product._id, product.sellerId._id, product.product._id);
+                                    }}
+                                />
                             </Paper>
                         );
                     })}
             </div>
+            <ToastContainer />
         </div>
     );
 };
