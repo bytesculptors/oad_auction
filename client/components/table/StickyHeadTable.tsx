@@ -13,6 +13,11 @@ import Image from 'next/image';
 import { useState } from 'react';
 import moment from 'moment';
 import { IoIosSend } from 'react-icons/io';
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import dayjs, { Dayjs } from 'dayjs';
 
 export interface Column {
     id: 'id' | 'seller' | 'name' | 'description' | 'price' | 'category' | 'startTime' | 'status' | 'action';
@@ -195,6 +200,12 @@ const BasicModal = ({
     role?: string;
 }) => {
     const [file, setFile] = useState<File | undefined>();
+    const [valueDate, setValueDate] = useState<Dayjs | null>(dayjs(data?.startTime));
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        console.log(data.get('name'));
+    };
     return (
         <div>
             <Modal
@@ -217,59 +228,132 @@ const BasicModal = ({
                         <Typography id="modal-modal-description" sx={{ mt: 2 }}>
                             Bạn có thể điều chỉnh tùy thích
                         </Typography>
-                        <div className="mt-5 flex flex-col ">
-                            <div
-                                className="flex flex-col gap-4 border-y-2 py-3"
-                                style={{ maxHeight: '300px', overflowY: 'auto' }}
-                            >
-                                <TextField id="name" label="Name" variant="outlined" value={data?.name} />
-                                <Image
-                                    src={file ? URL.createObjectURL(file) : data?.image || 'null'}
-                                    alt="product model"
-                                    width={500}
-                                    height={500}
-                                    className="object-contain"
-                                />
-                                <input
-                                    onChange={(event) => {
-                                        setFile(event.target.files?.[0]);
-                                    }}
-                                    id="image"
-                                    name="image"
-                                    type="file"
-                                    accept="image/png, image/gif, image/jpeg, image/webp"
-                                    className="py-8 appearance-none rounded-none relative block w-full px-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                                    placeholder="Description"
-                                ></input>
-                                <TextField id="price" label="Price" variant="outlined" value={data?.price} />
-                                <TextField
-                                    multiline
-                                    id="description"
-                                    label="Description"
-                                    variant="outlined"
-                                    rows={4}
-                                    value={data?.description}
-                                />
-                                <TextField id="duration" label="Duration" variant="outlined" value={data?.duration} />
-                                <TextField
-                                    id="dimension"
-                                    label="Dimension"
-                                    variant="outlined"
-                                    value={data?.dimension}
-                                />
-                                <TextField id="color" label="Color" variant="outlined" value={data?.color} />
-                                <TextField id="Color" label="Color" variant="outlined" value={data?.duration} />
-                            </div>
+                        <Box
+                            component="form"
+                            noValidate
+                            onSubmit={handleSubmit}
+                            sx={{ mt: 1 }}
+                            className="mt-8 h-80  space-y-6 overflow-auto "
+                        >
+                            <div className="mt-5 flex flex-col ">
+                                <div
+                                    className="flex flex-col gap-4 border-y-2 py-3 rounded-md shadow-sm -space-y-px "
+                                    style={{ maxHeight: '300px', overflowY: 'auto' }}
+                                >
+                                    <TextField id="name" label="Name" variant="outlined" defaultValue={data?.name} />
+                                    <Image
+                                        src={file ? URL.createObjectURL(file) : data?.image || 'null'}
+                                        alt="product model"
+                                        width={500}
+                                        height={500}
+                                        className="object-contain"
+                                    />
+                                    <input
+                                        onChange={(event) => {
+                                            setFile(event.target.files?.[0]);
+                                        }}
+                                        //
+                                        // defaultValue={data?.image}
+                                        id="image"
+                                        name="image"
+                                        type="file"
+                                        accept="image/png, image/gif, image/jpeg, image/webp"
+                                        className="py-8 appearance-none rounded-none relative block w-full px-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                                    ></input>
+                                    <TextField id="price" label="Price" variant="outlined" defaultValue={data?.price} />
+                                    <TextField
+                                        multiline
+                                        id="description"
+                                        label="Description"
+                                        variant="outlined"
+                                        rows={4}
+                                        defaultValue={data?.description}
+                                    />
+                                    <TextField
+                                        id="duration"
+                                        label="Duration"
+                                        variant="outlined"
+                                        defaultValue={data?.duration}
+                                    />
 
-                            <div className="flex justify-end mt-3 gap-2">
-                                <Button variant="contained" onClick={handleClose}>
-                                    Save
-                                </Button>
-                                <Button variant="contained" onClick={handleClose}>
-                                    Delete
-                                </Button>
+                                    <TextField id="color" label="Color" variant="outlined" defaultValue={data?.color} />
+                                    <TextField
+                                        id="duration"
+                                        label="Duration"
+                                        variant="outlined"
+                                        defaultValue={data?.duration}
+                                    />
+                                    <div>
+                                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                            <DemoContainer components={['DateTimePicker']}>
+                                                <DateTimePicker
+                                                    name="startTime"
+                                                    label="startTime"
+                                                    defaultValue={dayjs(data?.startTime)}
+                                                    ampm={false}
+                                                    onChange={(newValue) => setValueDate(newValue)}
+                                                />
+                                            </DemoContainer>
+                                        </LocalizationProvider>
+                                    </div>
+
+                                    <TextField
+                                        id="dimension"
+                                        label="Dimension"
+                                        variant="outlined"
+                                        defaultValue={data?.dimension}
+                                    />
+                                    <TextField id="color" label="Color" variant="outlined" defaultValue={data?.color} />
+                                    <TextField
+                                        id="weight"
+                                        label="Weight"
+                                        variant="outlined"
+                                        defaultValue={data?.weight}
+                                    />
+                                    <TextField
+                                        id="material"
+                                        label="Material"
+                                        variant="outlined"
+                                        defaultValue={data?.material}
+                                    />
+                                    <TextField
+                                        id="category"
+                                        label="Category"
+                                        variant="outlined"
+                                        defaultValue={data?.category}
+                                    />
+                                    <TextField
+                                        id="condition"
+                                        label="Condition"
+                                        variant="outlined"
+                                        defaultValue={data?.condition}
+                                    />
+                                    <TextField id="style" label="Style" variant="outlined" defaultValue={data?.style} />
+                                    <TextField
+                                        id="manufacturer"
+                                        label="Manufacturer"
+                                        variant="outlined"
+                                        defaultValue={data?.manufacturer}
+                                    />
+                                    <TextField id="year" label="Year" variant="outlined" defaultValue={data?.year} />
+                                    <TextField
+                                        id="origin"
+                                        label="Origin"
+                                        variant="outlined"
+                                        defaultValue={data?.origin}
+                                    />
+                                </div>
+
+                                <div className="flex justify-end mt-3 gap-2">
+                                    <Button variant="contained" type="submit">
+                                        Save
+                                    </Button>
+                                    <Button variant="contained" onClick={handleClose}>
+                                        Delete
+                                    </Button>
+                                </div>
                             </div>
-                        </div>
+                        </Box>
                     </Box>
                 )}
             </Modal>

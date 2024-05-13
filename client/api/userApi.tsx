@@ -29,4 +29,6 @@ const getUser = async () => {
     return _response;
 };
 
-export { getUser };
+const getBalance = async () => {};
+
+export { getUser, getBalance };

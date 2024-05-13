@@ -6,6 +6,7 @@ import ProductData from '@/data/ProductData';
 import { ProductProps } from '@/types';
 import { IProductWithSeller } from '@/types/product.type';
 import { Paper, TextField, Typography } from '@mui/material';
+import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { FiRefreshCcw } from 'react-icons/fi';
 import { toast, ToastContainer } from 'react-toastify';
@@ -110,6 +111,8 @@ const Approve = () => {
                                         Seller : {product.sellerId.name}
                                     </Typography>
                                 </div>
+                                <div>Start bidding time : {moment(product.startTime).format('LLLL')}</div>
+                                <div>{moment(product.startTime).endOf('seconds').fromNow()}</div>
                                 <ProductCard
                                     item={product.product}
                                     buttonTitle="Approve"
