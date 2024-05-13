@@ -11,58 +11,25 @@ import TableRow from '@mui/material/TableRow';
 import { Box, Button, FormControl, InputLabel, MenuItem, Modal, Select, TextField, Typography } from '@mui/material';
 import { CiEdit } from 'react-icons/ci';
 import { FiRefreshCcw } from 'react-icons/fi';
+import { getUser } from '@/api/userApi';
+import { IUser } from '@/types/use.type';
 
 interface Column {
-    id: 'name' | 'role' | 'email' | 'balance' | 'action';
+    id: 'id' | 'name' | 'role' | 'email' | 'balance' | 'action';
     label: string;
     minWidth?: number;
     align?: 'right';
     format?: (value: number) => string;
 }
 
-const columns: readonly Column[] = [
-    { id: 'name', label: 'Name', minWidth: 170 },
-    { id: 'role', label: 'Role', minWidth: 100 },
-    { id: 'email', label: 'Email', minWidth: 100 },
-    {
-        id: 'balance',
-        label: 'Balance',
-        minWidth: 170,
-        align: 'right',
-        format: (value: number) => value.toLocaleString('en-US'),
-    },
-    { id: 'action', label: 'Action', minWidth: 100 },
-];
-
 interface Data {
+    id: string;
     name: string;
     role: string;
     email: string;
     balance: number;
     action: string;
 }
-
-function createData(name: string, role: string, email: string, balance: number, action: string): Data {
-    return { name, role, email, balance, action };
-}
-
-const rows = [
-    createData('India', 'user', 'IN', 1324171354, 'edit'),
-    createData('China', 'seller', 'CN', 1403500365, 'edit'),
-    createData('Italy', 'user', 'IT', 60483973, 'edit'),
-    createData('United States', 'user', 'US', 9833520, 'edit'),
-    createData('Canada', 'user', 'CA', 37602103, 'edit'),
-    createData('Australia', 'user', 'AU', 25475400, 'edit'),
-    createData('Germany', 'user', 'DE', 83019200, 'edit'),
-    createData('Ireland', 'user', 'IE', 4857000, 'edit'),
-    createData('Mexico', 'user', 'MX', 126577691, 'edit'),
-    createData('Japan', 'user', 'JP', 126317000, 'edit'),
-    createData('France', 'user', 'FR', 67022000, 'edit'),
-    createData('United Kingdom', 'user', 'GB', 67545757, 'edit'),
-    createData('Russia', 'user', 'RU', 146793744, 'edit'),
-    createData('Nigeria', 'user', 'NG', 200962417, 'edit'),
-    createData('Brazil', 'user', 'BR', 210147125, 'edit'),
-];
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -86,6 +53,7 @@ export default function AccountManagement() {
     };
     const handleClose = () => setOpen(false);
     const [dataInRow, setDataInRow] = React.useState<Data>({
+        id: '',
         action: '',
         balance: 0,
         email: '',
@@ -102,10 +70,52 @@ export default function AccountManagement() {
         setPage(0);
     };
 
+    const columns: readonly Column[] = [
+        { id: 'id', label: 'Id', minWidth: 170 },
+        { id: 'name', label: 'Name', minWidth: 170 },
+        { id: 'role', label: 'Role', minWidth: 100 },
+        { id: 'email', label: 'Email', minWidth: 100 },
+        {
+            id: 'balance',
+            label: 'Balance',
+            minWidth: 170,
+            align: 'right',
+            format: (value: number) => value.toLocaleString('en-US'),
+        },
+        { id: 'action', label: 'Action', minWidth: 100 },
+    ];
+
+    // const rows: Data[] = [{ action: 'edit', balance: 0, email: '@', name: 'a', role: 'user' }];
+
+    const [rows, setRows] = React.useState<Data[]>([]);
+
+    const handleResetApi = async () => {
+        const reponse = await getUser();
+        if (reponse.status === 200) {
+            var _userList: Data[] = [];
+            reponse.data.map((user) => {
+                _userList.push({
+                    action: 'edit',
+                    balance: user.balance,
+                    email: user.email,
+                    id: user._id,
+                    name: user.name,
+                    role: user.role,
+                });
+            });
+
+            setRows(_userList);
+        }
+    };
+
+    React.useEffect(() => {
+        handleResetApi();
+    }, []);
+
     return (
         <div className="w-full flex flex-col overflow-hidden gap-2">
             <div className="flex flex-row items-center justify-end m-3">
-                <Button>
+                <Button onClick={handleResetApi}>
                     <FiRefreshCcw className="cursor-pointer m-3 " />
                 </Button>
 
@@ -143,6 +153,7 @@ export default function AccountManagement() {
                                                             className="text-2xl text-black cursor-pointer"
                                                             onClick={() =>
                                                                 handleOpen({
+                                                                    id: row.id,
                                                                     action: row.action,
                                                                     balance: row.balance,
                                                                     email: row.email,
@@ -223,9 +234,12 @@ const ModalComponent = ({ handleClose, open, data }: ModalComponentProps) => {
                         <TextField id="email" label="Email" variant="outlined" value={data.email} />
                         <TextField id="balance" label="Balance" variant="outlined" value={data.balance} />
                     </div>
-                    <div className="flex justify-end mt-3">
+                    <div className="flex justify-end mt-3 gap-3">
                         <Button variant="contained" onClick={handleClose}>
                             Save
+                        </Button>
+                        <Button variant="contained" onClick={handleClose}>
+                            Delete
                         </Button>
                     </div>
                 </div>
