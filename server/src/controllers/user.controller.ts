@@ -130,6 +130,7 @@ export class UserController {
         const { userId } = <{ userId: string }>req.params;
         const { status: stringStatus } = <{ status: string }>req.query;
         if (!userId) return res.status(400).json({ message: 'UserId is required!' });
+        if (!stringStatus) return res.status(400).json({ message: 'Status is required!' });
         const status = parseInt(stringStatus);
         if (!isNaN(status) && !isValidUserStatus(status)) return res.status(400).json({ message: 'status is invalid' });
         try {
@@ -150,7 +151,8 @@ export class UserController {
             const biddingSessions = await BiddingSessionModel.find(filter)
                 .select(biddingSelects)
                 .populate(BiddingRefOptions());
-            res.status(200).json({ data: biddingSessions });
+            const filterBiddingSessions = biddingSessions.map((item) => ({ ...item.toObject(), userStatus: status }));
+            res.status(200).json({ data: filterBiddingSessions });
         } catch (error) {
             console.log(error);
             res.status(500).json({ message: 'Something went wrong !' });
