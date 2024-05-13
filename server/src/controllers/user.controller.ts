@@ -119,6 +119,13 @@ export class UserController {
         }
     };
 
+    /**
+     *
+     * @param req
+     * @param res
+     * @returns products by user
+     */
+
     static findProductsByUser = async (req: Request, res: Response) => {
         const { userId } = <{ userId: string }>req.params;
         const { status: stringStatus } = <{ status: string }>req.query;
@@ -144,6 +151,23 @@ export class UserController {
                 .select(biddingSelects)
                 .populate(BiddingRefOptions());
             res.status(200).json({ data: biddingSessions });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message: 'Something went wrong !' });
+        }
+    };
+
+    static getBalanceByUser = async (req: Request, res: Response) => {
+        const { userId } = <{ userId: string }>req.params;
+        if (!userId) return res.status(400).json({ message: 'UserId is required!' });
+        try {
+            const user = await UserModel.findById(userId);
+            if (!user) return res.status(400).json({ message: 'User did not exist yet!' });
+            res.status(200).json({
+                data: {
+                    balance: user.balance,
+                },
+            });
         } catch (error) {
             console.log(error);
             res.status(500).json({ message: 'Something went wrong !' });
