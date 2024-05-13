@@ -1,6 +1,6 @@
 import request from '@/lib/axios';
 
-export default interface IProduct {
+export interface IProduct {
     duration: number;
     product: {
         _id: string;
@@ -20,39 +20,18 @@ export default interface IProduct {
         year: number;
         origin: string;
     };
-    startTime: Date;
+    startTime: string;
     status: number;
+    userStatus: number;
     _id: string;
 }
 
-export interface IProductUser extends IProduct {
-    product: {
-        _id: string;
-        name: string;
-        price: number;
-        deposit: number;
-        description: string;
-        image: string;
-        category: string;
-        material: string;
-        dimension: string;
-        color: string;
-        weight: number;
-        condition: string;
-        style: string;
-        manufacturer: string;
-        year: number;
-        origin: string;
-        statusUser: 'Applied';
-    };
-}
-
 interface IResponseGetProducts {
-    data: IProductUser[];
+    data: IProduct[];
     status: number;
 }
 
-const getProductForUserApi = async (userId: string, status?: number) => {
+const getProductForUserApi = async (userId: string, status: number) => {
     const _response: IResponseGetProducts = {
         data: [],
         status: -1,

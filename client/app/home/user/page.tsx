@@ -1,8 +1,7 @@
 'use client';
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { IProductUser, getProductForUserApi } from '@/api/searchApi';
-import IProduct from '@/api/searchApi';
+import { IProduct, getProductForUserApi } from '@/api/searchApi';
 import { ProductCard } from '@/components';
 import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
@@ -12,10 +11,14 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/Store';
 import { useRouter } from 'next/navigation';
+import { payProduct } from '@/api/paymentApi';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import moment from 'moment';
 
 export default function page() {
-    const [productList, setProductList] = useState<IProductUser[]>([]);
-    const [status, setStatus] = useState<number | null>(null);
+    const [productList, setProductList] = useState<IProduct[]>([]);
+    const [status, setStatus] = useState(0);
     const router = useRouter();
     const handleChange = (event: SelectChangeEvent) => {
         setStatus(parseInt(event.target.value, 10) as number);
@@ -39,12 +42,37 @@ export default function page() {
     const handleAccessBiddingRoom = (idSession: string) => {
         router.push(`/bid/${idSession}`);
     };
+
+    const handlePayProduct = async (idSession: string, idProduct: string, idUser: string) => {
+        const response = await payProduct(
+            {
+                _id: idSession,
+                productId: idProduct,
+            },
+            idUser,
+        );
+        if (response.status === 201) {
+            toast.success('Success', {
+                position: 'top-center',
+            });
+        } else {
+            toast.error(response.data.message, {
+                position: 'top-center',
+            });
+        }
+    };
+
     useEffect(() => {
         handleGetProduct(status);
     }, [status]);
+
     useEffect(() => {
         console.log('Search results updated:', productList);
     }, [productList]);
+
+    useEffect(() => {
+        handleGetProduct(0);
+    }, []);
     return (
         <div>
             <Box sx={{ minWidth: 120, padding: 5 }}>
@@ -55,6 +83,7 @@ export default function page() {
                         id="demo-simple-select"
                         value={status !== null ? status.toString() : ''}
                         label="Age"
+                        defaultValue={'0'}
                         onChange={handleChange}
                     >
                         <MenuItem value={0}>Applied</MenuItem>
@@ -74,21 +103,38 @@ export default function page() {
                         productList.map((item) => {
                             return (
                                 <div>
-                                    {item.product.statusUser === 'Applied' ? (
-                                        <ProductCard
-                                            key={item._id}
-                                            item={item.product}
-                                            buttonTitle="Access Bidding Room"
-                                            onhandleButton2={() => {
-                                                handleAccessBiddingRoom(item._id);
-                                            }}
-                                        />
-                                    ) : item.product.statusUser === 'Won not paying' ? (
-                                        <ProductCard key={item._id} item={item.product} buttonTitle="Pay" />
-                                    ) : item.product.statusUser === 'Won paid' ? (
-                                        <ProductCard key={item._id} item={item.product} buttonTitle="You win" />
+                                    {item.userStatus === 0 ? (
+                                        <div>
+                                            <div> Start time: {moment(item.startTime).format('LLLL')}</div>
+                                            <div>{moment().format('LLLL')}</div>
+                                            <ProductCard
+                                                key={item.product._id}
+                                                item={item.product}
+                                                buttonTitle="Access Bidding Room"
+                                                onhandleButton2={() => {
+                                                    handleAccessBiddingRoom(item._id);
+                                                }}
+                                            />
+                                        </div>
+                                    ) : item.userStatus === 1 ? (
+                                        <div>
+                                            <div>
+                                                {' '}
+                                                {item._id}, {item.product._id}
+                                            </div>
+                                            <ProductCard
+                                                key={item.product._id}
+                                                item={item.product}
+                                                buttonTitle="Pay"
+                                                onhandleButton2={() => {
+                                                    handlePayProduct(item._id, item.product._id, stateUser._id);
+                                                }}
+                                            />{' '}
+                                        </div>
+                                    ) : item.userStatus === 2 ? (
+                                        <ProductCard key={item.product._id} item={item.product} buttonTitle="You win" />
                                     ) : (
-                                        <ProductCard key={item._id} item={item.product} buttonTitle="Loser" />
+                                        <ProductCard key={item.product._id} item={item.product} buttonTitle="Loser" />
                                     )}
                                 </div>
                             );
@@ -96,6 +142,7 @@ export default function page() {
                     )}
                 </div>
             </section>
+            <ToastContainer />
         </div>
     );
 }

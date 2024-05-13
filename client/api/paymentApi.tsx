@@ -50,4 +50,48 @@ const getCreateOrder = async (data: ICreateOrder) => {
     return _response;
 };
 
-export { getCreateOrder };
+interface IPayProduct {
+    _id: string;
+    productId: string;
+}
+
+interface IResponPayProduct {
+    data: {
+        data: string;
+        message?: string;
+    };
+
+    status: number;
+}
+
+const payProduct = async (data: IPayProduct, idUser: string) => {
+    var _response: IResponPayProduct = {
+        data: {
+            message: '',
+            data: '',
+        },
+
+        status: -1,
+    };
+
+    await request
+        .post<IResponPayProduct>(`/v1/payment/pay-product/${idUser}`, {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        })
+        .then((response) => {
+            _response = response.data;
+            _response.status = response.status;
+        })
+        .catch((error) => {
+            if (error.response) {
+                _response = error.response.data;
+                _response.status = error.response.status;
+            }
+        });
+
+    console.log(_response);
+
+    return _response;
+};
+
+export { getCreateOrder, payProduct };
