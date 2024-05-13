@@ -30,14 +30,14 @@ interface IResponseGetProducts {
     status: number;
 }
 
-const getProductForUserApi = async () => {
+const getProductForUserApi = async (status: any) => {
     const _response: IResponseGetProducts = {
         data: [],
         status: 0,
     };
 
     await request
-        .get<IResponseGetProducts>(`/v1/user/find-product/66350d9386518be9e6cd4636?status=0`)
+        .get<IResponseGetProducts>(`/v1/user/find-product/66350d9386518be9e6cd4636?status=${status}`)
         .then((response) => {
             _response.data = response.data.data;
             _response.status = response.status;
