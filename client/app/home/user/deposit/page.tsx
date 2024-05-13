@@ -1,11 +1,14 @@
 'use client';
 import { getCreateOrder } from '@/api/paymentApi';
-import { RootState } from '@/redux/Store';
+import { getBalance } from '@/api/userApi';
+import { RootState, store } from '@/redux/Store';
+import { setBalanceUser } from '@/redux/stateUser/user.state';
 import { ThemeProvider } from '@emotion/react';
 import { Box, Button, Container, Fade, Modal, Paper, Slide, TextField, Typography, createTheme } from '@mui/material';
 import zIndex from '@mui/material/styles/zIndex';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { FiRefreshCcw } from 'react-icons/fi';
 import { useSelector } from 'react-redux';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -14,9 +17,27 @@ const defaultTheme = createTheme();
 
 export default function Wallet() {
     const stateUser = useSelector((state: RootState) => state.reducerUser);
+    const [balance, setBalance] = useState(0);
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+
+    const handleGetBalance = async () => {
+        const response = await getBalance(stateUser._id);
+        if (response.status === 200) {
+            console.log(response.data.balance);
+            setBalance(response.data.balance);
+            store.dispatch(setBalanceUser(response.data.balance));
+        }
+    };
+
+    useEffect(() => {
+        handleGetBalance();
+    }, []);
+
+    useEffect(() => {
+        handleGetBalance();
+    }, [balance]);
 
     return (
         <ThemeProvider theme={defaultTheme}>
@@ -27,6 +48,10 @@ export default function Wallet() {
                             id="empty-cover-art"
                             className="mx-auto mt-20 shadow-md py-5 h-28 rounded w-56 bg-blue-100 text-center opacity-50 md:border-solid md:border-2 md:border-blue-800"
                         >
+                            <center>
+                                {' '}
+                                <FiRefreshCcw onClick={handleGetBalance} />
+                            </center>
                             <center>
                                 <img
                                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/1200px-Ethereum-icon-purple.svg.png"
@@ -40,7 +65,7 @@ export default function Wallet() {
                         <Typography component="p" variant="h6">
                             Thông tin tài khoản
                         </Typography>
-                        <Typography component="p">Balance : {stateUser.balance}</Typography>
+                        <Typography component="p">Balance : {balance}</Typography>
                         <div className="mt-4">
                             <Button onClick={handleOpen} type="submit" variant="contained">
                                 Nạp lần đầu

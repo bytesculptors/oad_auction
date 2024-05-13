@@ -29,6 +29,38 @@ const getUser = async () => {
     return _response;
 };
 
-const getBalance = async () => {};
+interface IResponseGetBalance {
+    data: {
+        balance: number;
+    };
+
+    message?: string;
+    status: number;
+}
+
+const getBalance = async (idUser: string) => {
+    var _response: IResponseGetBalance = {
+        data: {
+            balance: -1,
+        },
+        status: 0,
+        message: '',
+    };
+
+    await request
+        .get<IResponseGetBalance>(`/v1/user/get-balance/${idUser}`)
+        .then((response) => {
+            _response = response.data;
+            _response.status = response.status;
+        })
+        .catch((error) => {
+            if (error.response) {
+                _response = error.response.data;
+                _response.status = error.response.status;
+            }
+        });
+
+    return _response;
+};
 
 export { getUser, getBalance };

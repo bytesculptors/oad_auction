@@ -20,9 +20,14 @@ const stateUserSlice = createSlice({
             console.log('action', user);
             return user;
         },
+
+        setBalanceUser: (user, action: PayloadAction<number>) => {
+            user.balance = action.payload;
+            return user;
+        },
     },
 });
 
-export const { setStateUser } = stateUserSlice.actions;
+export const { setStateUser, setBalanceUser } = stateUserSlice.actions;
 
 export default stateUserSlice;
