@@ -16,19 +16,24 @@ import StickyHeadTable, { Data } from '@/components/table/StickyHeadTable';
 export default function AdminManagementProducts() {
     const stateUser = useSelector((state: RootState) => state.reducerUser);
     const [productList, setProductList] = useState<Data[]>([]);
-    const [sort, setSort] = useState('');
+    const [statusProduct, setStatusProduct] = useState('');
 
-    const handleChange = (event: SelectChangeEvent) => {
-        setSort(event.target.value as string);
+    const handleChangeStatusProduct = (event: SelectChangeEvent) => {
+        setStatusProduct(event.target.value as string);
     };
 
-    const handleResetApi = async () => {
-        const response = await adminGetProduct();
+    useEffect(() => {
+        handleResetApi(parseInt(statusProduct));
+    }, [statusProduct]);
+
+    const handleResetApi = async (status?: number) => {
+        const response = await adminGetProduct(status);
 
         if (response.status === 200) {
             var _productList: Data[] = [];
             response.data.map((item) => {
                 if (item.product && item.sellerId) {
+                    var status = 'null';
                     var status = 'null';
                     if (item.status === 0) {
                         status = 'Inactive';
@@ -41,6 +46,8 @@ export default function AdminManagementProducts() {
                     } else if (item.status === 4) {
                         status = 'Bidding';
                     } else if (item.status === 5) {
+                        status = 'Paying';
+                    } else if (item.status === 6) {
                         status = 'Sold';
                     }
                     _productList.push({
@@ -80,23 +87,26 @@ export default function AdminManagementProducts() {
         <div className="w-5/6">
             <Box sx={{ minWidth: 120, padding: 5 }}>
                 <div className="flex flex-row justify-end gap-3">
-                    <button onClick={handleResetApi}>
+                    <button onClick={() => handleResetApi}>
                         <FiRefreshCcw />
                     </button>
                     <TextField id="outlined-basic" label="Search" variant="outlined" />
                     <FormControl className="w-1/5">
-                        <InputLabel id="demo-simple-select-label">Sort</InputLabel>
+                        <InputLabel id="demo-simple-select-label">Status</InputLabel>
                         <Select
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
-                            value={sort}
+                            value={statusProduct}
                             label="Sort"
-                            onChange={handleChange}
+                            onChange={handleChangeStatusProduct}
                         >
-                            <MenuItem value={'id'}>Id</MenuItem>
-                            <MenuItem value={'name'}>Name</MenuItem>
-                            <MenuItem value={'description'}>Description</MenuItem>
-                            <MenuItem value={'price'}>Price</MenuItem>
+                            <MenuItem value={'0'}>Inactive</MenuItem>
+                            <MenuItem value={'1'}>Pending</MenuItem>
+                            <MenuItem value={'2'}>Active</MenuItem>
+                            <MenuItem value={'3'}>Deny</MenuItem>
+                            <MenuItem value={'4'}>Bidding</MenuItem>
+                            <MenuItem value={'5'}>Paying</MenuItem>
+                            <MenuItem value={'6'}>Sold</MenuItem>
                         </Select>
                     </FormControl>
                 </div>

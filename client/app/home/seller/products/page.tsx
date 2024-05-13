@@ -17,9 +17,19 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export default function SellerProducts() {
+    const [statusProduct, setStatusProduct] = useState('');
     const stateUser = useSelector((state: RootState) => state.reducerUser);
     const [productList, setProductList] = useState<Data[]>([]);
-    const [sort, setSort] = useState('');
+
+    const handleStatusChange = (event: SelectChangeEvent) => {
+        setStatusProduct(event.target.value as string);
+        // handleResetApi(parseInt(statusProduct));
+    };
+
+    useEffect(() => {
+        // console.log(statusProduct);
+        handleResetApi(parseInt(statusProduct));
+    }, [statusProduct]);
 
     const handleRequestReview = async (idProduct: string) => {
         const response = await requestReviewApi(
@@ -39,14 +49,13 @@ export default function SellerProducts() {
         }
     };
 
-    const handleChange = (event: SelectChangeEvent) => {
-        setSort(event.target.value as string);
-    };
-
-    const handleResetApi = async () => {
-        const response = await getProductByIdSeller({
-            sellerId: stateUser._id,
-        });
+    const handleResetApi = async (status?: number) => {
+        const response = await getProductByIdSeller(
+            {
+                sellerId: stateUser._id,
+            },
+            status,
+        );
 
         if (response.status === 200) {
             var _productList: Data[] = [];
@@ -64,6 +73,8 @@ export default function SellerProducts() {
                     } else if (item.status === 4) {
                         status = 'Bidding';
                     } else if (item.status === 5) {
+                        status = 'Paying';
+                    } else if (item.status === 6) {
                         status = 'Sold';
                     }
                     _productList.push({
@@ -102,23 +113,31 @@ export default function SellerProducts() {
         <div className="w-5/6">
             <Box sx={{ minWidth: 120, padding: 5 }}>
                 <div className="flex flex-row justify-end gap-3">
-                    <button onClick={handleResetApi}>
+                    <button
+                        onClick={() => {
+                            handleResetApi();
+                            setStatusProduct('');
+                        }}
+                    >
                         <FiRefreshCcw />
                     </button>
                     <TextField id="outlined-basic" label="Search" variant="outlined" />
                     <FormControl className="w-1/5">
-                        <InputLabel id="demo-simple-select-label">Sort</InputLabel>
+                        <InputLabel id="demo-simple-select-label">Status</InputLabel>
                         <Select
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
-                            value={sort}
-                            label="Sort"
-                            onChange={handleChange}
+                            value={statusProduct}
+                            label="Status"
+                            onChange={handleStatusChange}
                         >
-                            <MenuItem value={'id'}>Id</MenuItem>
-                            <MenuItem value={'name'}>Name</MenuItem>
-                            <MenuItem value={'description'}>Description</MenuItem>
-                            <MenuItem value={'price'}>Price</MenuItem>
+                            <MenuItem value={'0'}>Inactive</MenuItem>
+                            <MenuItem value={'1'}>Pending</MenuItem>
+                            <MenuItem value={'2'}>Active</MenuItem>
+                            <MenuItem value={'3'}>Deny</MenuItem>
+                            <MenuItem value={'4'}>Bidding</MenuItem>
+                            <MenuItem value={'5'}>Paying</MenuItem>
+                            <MenuItem value={'6'}>Sold</MenuItem>
                         </Select>
                     </FormControl>
                 </div>

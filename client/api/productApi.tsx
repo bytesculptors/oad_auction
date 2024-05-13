@@ -120,17 +120,24 @@ const getProductByIdSeller = async (data: IGetProduct, status?: number) => {
         status: 0,
         message: '',
     };
-    let config = {
-        method: 'get',
-        maxBodyLength: Infinity,
-        url: `http://localhost:4848/v1/seller/get-products/${data.sellerId}?status${status}`,
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    };
+    // let config = {
+    //     method: 'get',
+    //     maxBodyLength: Infinity,
+    //     url: `http://localhost:4848/v1/seller/get-products/${data.sellerId}?status${status}`,
+    //     headers: {
+    //         'Content-Type': 'application/json',
+    //     },
+    // };
 
     await request
-        .request<IResponProduct>(config)
+        .get<IResponProduct>(`/v1/seller/get-products/${data.sellerId}`, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            params: {
+                status: status,
+            },
+        })
         .then((response) => {
             _response.data = response.data.data;
             _response.status = response.status;
