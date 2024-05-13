@@ -8,6 +8,9 @@ import { RootState } from '@/redux/Store';
 import { searchProductsApi } from '@/api/searchApi';
 import IProduct from '@/api/searchApi';
 import { redirect } from 'next/navigation';
+import { biddingProduct } from '@/api/userApi';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Home() {
     const [keyWord, setKeyWord] = useState('');
@@ -49,6 +52,23 @@ export default function Home() {
         console.log(stateUser);
     }, [stateUser]);
 
+    const handleApply = async (productId: string, userId: string) => {
+        const response = await biddingProduct({
+            productId: productId,
+            userId: userId,
+        });
+
+        if (response.status === 201) {
+            toast.success('Success', {
+                position: 'top-center',
+            });
+        } else {
+            toast.error(response.data.message, {
+                position: 'top-center',
+            });
+        }
+    };
+
     return (
         // <main className="flex min-h-screen flex-col items-center justify-between p-24">
         <main className="overflow-hidden">
@@ -87,7 +107,16 @@ export default function Home() {
                     <section>
                         <div className="home__cars-wrapper">
                             {searchResults.map((item) => (
-                                <ProductCard key={item._id} item={item.product} />
+                                <div>
+                                    <div>{item.status} </div>
+                                    <ProductCard
+                                        key={item.product._id}
+                                        item={item.product}
+                                        onhandleButton2={async () => {
+                                            await handleApply(item.product._id, stateUser._id);
+                                        }}
+                                    />
+                                </div>
                             ))}
                         </div>
                     </section>
