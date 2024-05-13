@@ -97,8 +97,9 @@ export class UserController {
         const { keyword, limit = SearchProduct.LIMIT, page = SearchProduct.PAGE } = <IFindProduct>(<unknown>req.query);
         try {
             const products = await ProductModel.find(keyword ? { $text: { $search: keyword } } : {})
-                .limit(limit)
-                .skip(page)
+                .sort({ createdAt: -1 })
+                // .limit(limit)
+                // .skip(page)
                 .exec();
 
             const productIds = products.map((item) => {
@@ -109,6 +110,7 @@ export class UserController {
                 product: { $in: productIds },
                 status: ProductStatus.ACTIVE,
             })
+                .sort({ createdAt: -1 })
                 .select(biddingSelects)
                 .populate(BiddingRefOptions());
             if (!biddingSessions) return res.status(200).json({ data: [] });

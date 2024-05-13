@@ -150,7 +150,7 @@ export default function SellerProducts() {
                     await handleRequestReview(idProduct);
                 }}
             />
-            <ToastContainer />
+            
         </div>
     );
 }

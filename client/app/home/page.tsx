@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/Store';
 import { searchProductsApi } from '@/api/searchApi';
-import IProduct from '@/api/searchApi';
+import { IProduct } from '@/api/searchApi';
 import { redirect } from 'next/navigation';
 import { biddingProduct } from '@/api/userApi';
 import { toast, ToastContainer } from 'react-toastify';
@@ -105,18 +105,15 @@ export default function Home() {
 
                 {!isDataEmpty ? (
                     <section>
-                        <div className="home__cars-wrapper">
+                        <div className="grid grid-cols-3 gap-4">
                             {searchResults.map((item) => (
-                                <div>
-                                    <div>{item.status} </div>
-                                    <ProductCard
-                                        key={item.product._id}
-                                        item={item.product}
-                                        onhandleButton2={async () => {
-                                            await handleApply(item.product._id, stateUser._id);
-                                        }}
-                                    />
-                                </div>
+                                <ProductCard
+                                    key={item.product._id}
+                                    item={item.product}
+                                    onhandleButton2={async () => {
+                                        await handleApply(item.product._id, stateUser._id);
+                                    }}
+                                />
                             ))}
                         </div>
                     </section>

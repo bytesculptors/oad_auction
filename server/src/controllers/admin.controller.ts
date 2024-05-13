@@ -33,6 +33,7 @@ export default class AdminController {
                       }
                     : {},
             )
+                .sort({ createdAt: -1 })
                 .select(biddingSelects)
                 .populate(BiddingRefOptions())
                 .populate(UserRefOptions('sellerId'));

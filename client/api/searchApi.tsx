@@ -40,7 +40,7 @@ const getProductForUserApi = async (userId: string, status: number) => {
     await request
         .get<IResponseGetProducts>(`/v1/user/find-product/${userId}`, {
             params: {
-                status: status,
+                status,
             },
         })
         .then((response) => {

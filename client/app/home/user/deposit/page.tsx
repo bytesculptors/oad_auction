@@ -4,8 +4,7 @@ import { getBalance } from '@/api/userApi';
 import { RootState, store } from '@/redux/Store';
 import { setBalanceUser } from '@/redux/stateUser/user.state';
 import { ThemeProvider } from '@emotion/react';
-import { Box, Button, Container, Fade, Modal, Paper, Slide, TextField, Typography, createTheme } from '@mui/material';
-import zIndex from '@mui/material/styles/zIndex';
+import { Box, Button, Input, Modal, Typography, createTheme } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { FiRefreshCcw } from 'react-icons/fi';
@@ -17,7 +16,6 @@ const defaultTheme = createTheme();
 
 export default function Wallet() {
     const stateUser = useSelector((state: RootState) => state.reducerUser);
-    const [balance, setBalance] = useState(0);
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -26,18 +24,16 @@ export default function Wallet() {
         const response = await getBalance(stateUser._id);
         if (response.status === 200) {
             console.log(response.data.balance);
-            setBalance(response.data.balance);
             store.dispatch(setBalanceUser(response.data.balance));
         }
     };
 
     useEffect(() => {
-        handleGetBalance();
-    }, []);
-
-    useEffect(() => {
-        handleGetBalance();
-    }, [balance]);
+        console.log('stateUser', stateUser);
+        if (stateUser?._id) {
+            handleGetBalance();
+        }
+    }, [stateUser]);
 
     return (
         <ThemeProvider theme={defaultTheme}>
@@ -63,14 +59,14 @@ export default function Wallet() {
 
                     <div className="w-full mt-3 flex flex-col justify-center items-center">
                         <Typography component="p" variant="h6">
-                            Thông tin tài khoản
+                            Current Balance
                         </Typography>
-                        <Typography component="p">Balance : {balance}</Typography>
+                        <Typography component="p">Balance : {stateUser?.balance || 0}</Typography>
                         <div className="mt-4">
-                            <Button onClick={handleOpen} type="submit" variant="contained">
-                                Nạp lần đầu
+                            <Button onClick={handleOpen} type="submit" variant="contained" sx={{ minWidth: '120px' }}>
+                                Nạp
                             </Button>
-                            <ModalComponent handleClose={handleClose} open={open} />
+                            <ModalComponent handleClose={handleClose} open={open} userId={stateUser?._id} />
                         </div>
                     </div>
                 </div>
@@ -82,6 +78,7 @@ export default function Wallet() {
 interface ModalComponentProps {
     open: boolean;
     handleClose: () => void;
+    userId: string;
 }
 
 const style = {
@@ -94,18 +91,20 @@ const style = {
     boxShadow: 24,
     p: 4,
 };
-const ModalComponent = ({ handleClose, open }: ModalComponentProps) => {
-    const [money, setMoney] = useState<string>('0');
+const ModalComponent = ({ handleClose, open, userId }: ModalComponentProps) => {
+    const [money, setMoney] = useState<number>(0);
     const router = useRouter();
 
     const handleSummit = async () => {
-        setMoney(parseInt(money.trim(), 10).toString());
-        const response = await getCreateOrder({
-            amount: parseInt(money) || 0,
-            language: 'vn',
-            orderDescription: '2 kem chong nang',
-            orderType: '100000',
-        });
+        const response = await getCreateOrder(
+            {
+                amount: money || 0,
+                language: 'vn',
+                orderDescription: '2 kem chong nang',
+                orderType: '100000',
+            },
+            userId,
+        );
 
         if (response.status === 200) {
             window.open(response.data.url, '_blank');
@@ -129,7 +128,7 @@ const ModalComponent = ({ handleClose, open }: ModalComponentProps) => {
                     Số tiền bạn muốn nạp
                 </Typography>
                 <div className="flex flex-col gap-2">
-                    <TextField
+                    {/* <TextField
                         className="mt-2"
                         id="money"
                         label="money"
@@ -137,6 +136,12 @@ const ModalComponent = ({ handleClose, open }: ModalComponentProps) => {
                         onChange={(e) => {
                             setMoney(e.target.value);
                         }}
+                    /> */}
+                    <Input
+                        size="medium"
+                        type="number"
+                        onChange={(e) => setMoney(Number(e.target.value))}
+                        inputProps={{ min: 5000 }}
                     />
                     <div className="flex flex-row gap-2 mt-3">
                         <LogoComponent
@@ -147,22 +152,19 @@ const ModalComponent = ({ handleClose, open }: ModalComponentProps) => {
                         <LogoComponent
                             src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-ZaloPay.png"
                             active={false}
-                            onClick={() => {}}
                         />
                         <LogoComponent
-                            onClick={() => {}}
                             src="https://cdn.iconscout.com/icon/free/png-512/free-paypal-5-226456.png?f=webp&w=512"
                             active={false}
                         />
                     </div>
                 </div>
-                <ToastContainer />
             </Box>
         </Modal>
     );
 };
 
-const LogoComponent = ({ src, active, onClick }: { src: string; active: boolean; onClick: () => void }) => {
+const LogoComponent = ({ src, active, onClick = () => {} }: { src: string; active: boolean; onClick?: () => void }) => {
     return (
         <button
             style={{

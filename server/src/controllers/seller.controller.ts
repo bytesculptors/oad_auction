@@ -143,6 +143,7 @@ export default class SellerController {
                           sellerId,
                       },
             )
+                .sort({ createdAt: -1 })
                 .select(biddingSelects)
                 .populate(BiddingRefOptions({ sellerId }));
             res.status(200).json({ data: biddingSessions });

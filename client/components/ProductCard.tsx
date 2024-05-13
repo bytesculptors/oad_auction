@@ -15,7 +15,7 @@ const ProductCard = ({ item, buttonTitle, onhandleButton2 }: ProductCardProps) =
     const { name, image, price, category, year, style, origin } = item;
     const [isOpen, setIsOpen] = useState(false);
     return (
-        <div className="car-card group w-48 lg:w-96">
+        <div className="car-card group w-[400px] h-[400px]">
             <div className="car-card__content">
                 <h2 className="car-card__content-title">
                     {name} {origin}

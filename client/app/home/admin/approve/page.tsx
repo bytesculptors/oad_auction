@@ -124,7 +124,6 @@ const Approve = () => {
                         );
                     })}
             </div>
-            <ToastContainer />
         </div>
     );
 };

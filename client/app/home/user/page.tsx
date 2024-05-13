@@ -21,11 +21,12 @@ export default function page() {
     const [status, setStatus] = useState(0);
     const router = useRouter();
     const handleChange = (event: SelectChangeEvent) => {
-        setStatus(parseInt(event.target.value, 10) as number);
+        // setStatus(parseInt(event.target.value, 10) as number);
+        setStatus(parseInt(event.target.value));
     };
     const stateUser = useSelector((state: RootState) => state.reducerUser);
 
-    const handleGetProduct = async (status: any) => {
+    const handleGetProduct = async (status: number) => {
         try {
             const response = await getProductForUserApi(stateUser._id, status);
             if (response.status === 200) {
@@ -55,24 +56,28 @@ export default function page() {
             toast.success('Success', {
                 position: 'top-center',
             });
+            setProductList((prev) => prev.filter((product) => product._id !== response._id));
         } else {
-            toast.error(response.data.message, {
+            toast.error(response.data?.message, {
                 position: 'top-center',
             });
         }
     };
 
     useEffect(() => {
-        handleGetProduct(status);
+        if (stateUser?._id) handleGetProduct(status);
+    }, [stateUser]);
+
+    useEffect(() => {
+        if (stateUser?._id) {
+            handleGetProduct(status);
+        }
     }, [status]);
 
     useEffect(() => {
         console.log('Search results updated:', productList);
     }, [productList]);
 
-    useEffect(() => {
-        handleGetProduct(0);
-    }, []);
     return (
         <div>
             <Box sx={{ minWidth: 120, padding: 5 }}>
@@ -94,55 +99,59 @@ export default function page() {
                 </FormControl>
             </Box>
             <section className="mx-5">
-                <div className="home__cars-wrapper">
+                <div className="">
                     {productList.length === 0 ? (
                         <div>
                             <h2 className="text-black text-xl font-bold">Oops, no results!!</h2>
                         </div>
                     ) : (
-                        productList.map((item) => {
-                            return (
-                                <div>
-                                    {item.userStatus === 0 ? (
-                                        <div>
-                                            <div> Start time: {moment(item.startTime).format('LLLL')}</div>
-                                            <div>{moment().format('LLLL')}</div>
-                                            <ProductCard
-                                                key={item.product._id}
-                                                item={item.product}
-                                                buttonTitle="Access Bidding Room"
-                                                onhandleButton2={() => {
-                                                    handleAccessBiddingRoom(item._id);
-                                                }}
-                                            />
-                                        </div>
-                                    ) : item.userStatus === 1 ? (
-                                        <div>
+                        <div className="flex flex-row gap-2 flex-wrap">
+                            {productList.map((item) => {
+                                return (
+                                    <div>
+                                        {item.userStatus === 0 ? (
                                             <div>
-                                                {' '}
-                                                {item._id}, {item.product._id}
+                                                {/* count down */}
+                                                <ProductCard
+                                                    key={item.product._id}
+                                                    item={item.product}
+                                                    buttonTitle="Access Bidding Room"
+                                                    onhandleButton2={() => {
+                                                        handleAccessBiddingRoom(item._id);
+                                                    }}
+                                                />
                                             </div>
+                                        ) : item.userStatus === 1 ? (
+                                            <div>
+                                                <ProductCard
+                                                    key={item.product._id}
+                                                    item={item.product}
+                                                    buttonTitle="Pay"
+                                                    onhandleButton2={() => {
+                                                        handlePayProduct(item._id, item.product._id, stateUser._id);
+                                                    }}
+                                                />{' '}
+                                            </div>
+                                        ) : item.userStatus === 2 ? (
                                             <ProductCard
                                                 key={item.product._id}
                                                 item={item.product}
-                                                buttonTitle="Pay"
-                                                onhandleButton2={() => {
-                                                    handlePayProduct(item._id, item.product._id, stateUser._id);
-                                                }}
-                                            />{' '}
-                                        </div>
-                                    ) : item.userStatus === 2 ? (
-                                        <ProductCard key={item.product._id} item={item.product} buttonTitle="You win" />
-                                    ) : (
-                                        <ProductCard key={item.product._id} item={item.product} buttonTitle="Loser" />
-                                    )}
-                                </div>
-                            );
-                        })
+                                                buttonTitle="You win"
+                                            />
+                                        ) : (
+                                            <ProductCard
+                                                key={item.product._id}
+                                                item={item.product}
+                                                buttonTitle="Loser"
+                                            />
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
                     )}
                 </div>
             </section>
-            <ToastContainer />
         </div>
     );
 }

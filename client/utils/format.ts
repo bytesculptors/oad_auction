@@ -20,3 +20,10 @@ export const formatColor = (
         return Math.ceil((seconds * (colors.length - index - 1)) / colors.length);
     }) as { 0: number } & { 1: number } & number[];
 };
+
+const formatCountdown = (miniseconds: number) => {
+    const days = Math.floor(miniseconds / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((miniseconds % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((miniseconds % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((miniseconds % (1000 * 60)) / 1000);
+};

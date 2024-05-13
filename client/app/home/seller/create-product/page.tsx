@@ -239,7 +239,6 @@ export default function createProduct() {
                     </div>
                 </Box>
             </div>
-            <ToastContainer />
         </div>
     );
 }
