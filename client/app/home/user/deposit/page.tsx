@@ -5,8 +5,9 @@ import { RootState, store } from '@/redux/Store';
 import { setBalanceUser } from '@/redux/stateUser/user.state';
 import { ThemeProvider } from '@emotion/react';
 import { Box, Button, Input, Modal, Typography, createTheme } from '@mui/material';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { FiRefreshCcw } from 'react-icons/fi';
 import { useSelector } from 'react-redux';
 import { toast, ToastContainer } from 'react-toastify';
@@ -28,6 +29,11 @@ export default function Wallet() {
         }
     };
 
+    const formatMoney = useMemo(() => {
+        if (!stateUser?.balance) return '0';
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(stateUser?.balance);
+    }, [stateUser?.balance]);
+
     useEffect(() => {
         console.log('stateUser', stateUser);
         if (stateUser?._id) {
@@ -46,7 +52,7 @@ export default function Wallet() {
                         >
                             <center>
                                 {' '}
-                                <FiRefreshCcw onClick={handleGetBalance} />
+                                <FiRefreshCcw onClick={handleGetBalance} className="hover:opacity-80 cursor-pointer" />
                             </center>
                             <center>
                                 <img
@@ -61,7 +67,7 @@ export default function Wallet() {
                         <Typography component="p" variant="h6">
                             Current Balance
                         </Typography>
-                        <Typography component="p">Balance : {stateUser?.balance || 0}</Typography>
+                        <Typography component="p">{formatMoney}</Typography>
                         <div className="mt-4">
                             <Button onClick={handleOpen} type="submit" variant="contained" sx={{ minWidth: '120px' }}>
                                 Nạp
@@ -143,17 +149,21 @@ const ModalComponent = ({ handleClose, open, userId }: ModalComponentProps) => {
                         onChange={(e) => setMoney(Number(e.target.value))}
                         inputProps={{ min: 5000 }}
                     />
-                    <div className="flex flex-row gap-2 mt-3">
+                    <div className="flex flex-col gap-2 mt-3">
+                        <Typography variant="body1">Select your payment method *</Typography>
                         <LogoComponent
+                            method="VNPay"
                             onClick={handleSummit}
-                            src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-VNPAY-QR-1.png"
+                            src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Icon-VNPAY-QR.png"
                             active={true}
                         />
                         <LogoComponent
+                            method="ZaloPay"
                             src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-ZaloPay.png"
                             active={false}
                         />
                         <LogoComponent
+                            method="Paypal"
                             src="https://cdn.iconscout.com/icon/free/png-512/free-paypal-5-226456.png?f=webp&w=512"
                             active={false}
                         />
@@ -164,29 +174,35 @@ const ModalComponent = ({ handleClose, open, userId }: ModalComponentProps) => {
     );
 };
 
-const LogoComponent = ({ src, active, onClick = () => {} }: { src: string; active: boolean; onClick?: () => void }) => {
+const LogoComponent = ({
+    src,
+    active,
+    onClick = () => {},
+    method,
+}: {
+    src: string;
+    active: boolean;
+    onClick?: () => void;
+    method: string;
+}) => {
     return (
-        <button
-            style={{
-                display: 'flex',
-                width: 60,
-                height: 60,
-                borderRadius: 15,
-                background: 'linear-gradient(145deg, #ffffff, #e0e0e0)',
-                boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)', // Shadow
-                border: '1px solid rgba(0, 0, 0, 0.1)', // Border
-                justifyContent: 'center',
-                alignItems: 'center',
-                overflow: 'hidden',
-                opacity: active ? 1 : 0.5,
-                cursor: 'pointer',
-            }}
-            className="hover: bg-slate-600"
+        <Button
+            variant="outlined"
+            size="medium"
+            startIcon={
+                <Image
+                    alt="pay"
+                    src={src}
+                    width={40}
+                    height={40}
+                    className="object-cover w-[40px] h-[40px] opacity-70"
+                />
+            }
+            className="flex flex-row justify-start gap-8"
             onClick={onClick}
+            disabled={!active}
         >
-            <div className="m-2">
-                <img src={src} />
-            </div>
-        </button>
+            {method + (active ? '' : ' developing')}
+        </Button>
     );
 };

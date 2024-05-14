@@ -25,12 +25,12 @@ import {
     IBidSuccessCallBack,
     ICommentCallBack,
     IJoinRoom,
-    INewComment,
     IPlaceBidResponse,
     IUserJoinedCallBack,
     IWinnerAnnouncedCallBack,
     IWinnerResponse,
 } from '@/types/socket.type';
+import { useRouter } from 'next/navigation';
 
 const Transition = forwardRef(function Transition(
     props: TransitionProps & {
@@ -38,7 +38,7 @@ const Transition = forwardRef(function Transition(
     },
     ref: React.Ref<unknown>,
 ) {
-    return <Slide direction="up" ref={ref} {...props} />;
+    return <Slide direction="down" ref={ref} {...props} />;
 });
 
 const RoomDetail = ({ params }: { params: { roomId: string } }) => {
@@ -53,6 +53,7 @@ const RoomDetail = ({ params }: { params: { roomId: string } }) => {
     const [product, setProduct] = useState<IProductItem | null>(null);
     const [open, setOpen] = useState<boolean>(false);
     const [anounce, setAnounce] = useState<string>('');
+    const router = useRouter();
     const user: UserState = useSelector((state: RootState) => state.reducerUser);
     const dispatch = useDispatch();
 
@@ -103,6 +104,10 @@ const RoomDetail = ({ params }: { params: { roomId: string } }) => {
             dispatch(SocketActions.disconnectSocket());
         };
     }, []);
+
+    const formatMoney = useMemo(() => {
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(currentPrice);
+    }, [currentPrice]);
 
     const onUserJoindedCallback: IUserJoinedCallBack = (response) => {
         console.log(response);
@@ -155,7 +160,14 @@ const RoomDetail = ({ params }: { params: { roomId: string } }) => {
     };
 
     const onNewCommentReceived: ICommentCallBack = (response: ICommentItem) => {
-        setComments((prev) => [{ ...response, time: new Date(response.time) }, ...prev]);
+        setComments((prev) => [
+            {
+                ...response,
+                user: { ...response.user, name: user?._id === response.user.id ? 'You' : response.user.name },
+                time: new Date(response.time),
+            },
+            ...prev,
+        ]);
     };
 
     const handleComment = useCallback((comment: ICommentItem) => {
@@ -213,6 +225,7 @@ const RoomDetail = ({ params }: { params: { roomId: string } }) => {
 
     const handleClose = () => {
         setOpen(false);
+        router.push('/home/user');
     };
 
     return (
@@ -290,7 +303,7 @@ const RoomDetail = ({ params }: { params: { roomId: string } }) => {
                                                     </CountdownCircleTimer>
                                                 )}
                                                 {isSoon === 'late' && <Typography variant="h5">Too late...</Typography>}
-                                                <Typography variant="h6">Current Price: {currentPrice} VNĐ</Typography>
+                                                <Typography variant="h6">Current Price: {formatMoney}</Typography>
                                             </>
                                         )}
                                     </Box>
@@ -301,7 +314,13 @@ const RoomDetail = ({ params }: { params: { roomId: string } }) => {
                                         justifyContent={'center'}
                                         gap={6}
                                     >
-                                        <Typography variant="h6">Bid Increment: {bidIncrement} VNĐ</Typography>
+                                        <Typography variant="h6">
+                                            Bid Increment:{' '}
+                                            {new Intl.NumberFormat('vi-VN', {
+                                                style: 'currency',
+                                                currency: 'VND',
+                                            }).format(bidIncrement)}{' '}
+                                        </Typography>
                                         <Box
                                             display={'flex'}
                                             flexDirection={'row'}
@@ -360,7 +379,7 @@ const RoomDetail = ({ params }: { params: { roomId: string } }) => {
                 onClose={handleClose}
                 aria-describedby="alert-dialog-slide-description"
             >
-                <DialogTitle>{"Use Google's location service?"}</DialogTitle>
+                <DialogTitle>{'The bidding sesstion have just ended !'}</DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-slide-description">{anounce}</DialogContentText>
                 </DialogContent>

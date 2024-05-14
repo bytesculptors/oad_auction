@@ -138,7 +138,7 @@ const PaymentResultPage: FC<IPaymentResultPageProps> = ({ searchParams }) => {
                             <Box mt={4} display={'flex'} flexDirection={'column'} gap={1} width={'100%'}>
                                 <Link
                                     href={{
-                                        pathname: '/home',
+                                        pathname: '/home/user/deposit',
                                     }}
                                 >
                                     <Button
