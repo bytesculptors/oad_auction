@@ -10,6 +10,15 @@ Welcome to the our project repository! This project focuses on building a simple
 | Nguyen Hai Long | 21020349 |
 | Tran Tuan Nghia | 21020549 |
 
+## Technologies used
+Our system is built using the following technologies:
+- Frontend:
+  - Typescript, NextJS
+  - Redux
+- Backend:
+  - ExpressJS
+  - MongoDB
+
 ## Getting Started
 To run the project, follow these steps:
 1. Clone this repository
