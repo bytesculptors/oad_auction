@@ -14,7 +14,7 @@ Welcome to the our project repository! This project focuses on building a simple
 To run the project, follow these steps:
 1. Clone this repository
 ```bash
-git clone
+git clone https://github.com/bytesculptors/ooad_auction.git
 ```
 2. Install the dependencies for the front-end and back-end:
 - With backend:
